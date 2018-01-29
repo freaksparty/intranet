@@ -1,256 +1,215 @@
--- phpMyAdmin SQL Dump
--- version 4.6.6deb5
--- https://www.phpmyadmin.net/
---
--- Servidor: localhost:3306
--- Tiempo de generación: 15-01-2018 a las 16:18:29
--- Versión del servidor: 5.7.20
--- Versión de PHP: 7.0.27-1
+/*
+Navicat MySQL Data Transfer
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
+Source Server         : localhost
+Source Server Version : 50505
+Source Host           : localhost:3306
+Source Database       : intranet
 
+Target Server Type    : MYSQL
+Target Server Version : 50505
+File Encoding         : 65001
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+Date: 2018-01-30 00:50:36
+*/
 
---
--- Base de datos: `intranet`
---
+SET FOREIGN_KEY_CHECKS=0;
 
--- --------------------------------------------------------
+-- ----------------------------
+-- Table structure for class_games
+-- ----------------------------
+DROP TABLE IF EXISTS `class_games`;
+CREATE TABLE `class_games` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 
---
--- Estructura de tabla para la tabla `games`
---
+-- ----------------------------
+-- Records of class_games
+-- ----------------------------
+INSERT INTO `class_games` VALUES ('1', 'Clasificatoria');
+INSERT INTO `class_games` VALUES ('2', 'Eliminatoria');
 
+-- ----------------------------
+-- Table structure for games
+-- ----------------------------
+DROP TABLE IF EXISTS `games`;
 CREATE TABLE `games` (
-  `id` int(11) NOT NULL,
-  `image` varchar(255) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `title` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
-  `description` varchar(5000) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `date` datetime DEFAULT NULL,
-  `day_week` varchar(10) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `hour` varchar(5) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `max` int(11) NOT NULL DEFAULT '0',
-  `min_team` int(11) NOT NULL DEFAULT '1',
-  `max_team` int(11) NOT NULL DEFAULT '1',
-  `date_end_reg` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `type` int(11) DEFAULT NULL,
+  `class` int(11) DEFAULT NULL,
+  `max` int(11) DEFAULT NULL,
+  `min` int(11) DEFAULT NULL,
+  `date_max` datetime DEFAULT NULL,
+  `date_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `type` (`type`),
+  KEY `class` (`class`),
+  CONSTRAINT `games_ibfk_1` FOREIGN KEY (`type`) REFERENCES `type_games` (`id`),
+  CONSTRAINT `games_ibfk_2` FOREIGN KEY (`class`) REFERENCES `class_games` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 
---
--- Volcado de datos para la tabla `games`
---
+-- ----------------------------
+-- Records of games
+-- ----------------------------
+INSERT INTO `games` VALUES ('1', 'UNREAL TOURNEMENT', 'ardilla.jpg', '1', '1', '1', '1', null, '2018-01-29 23:45:37');
 
-INSERT INTO `games` (`id`, `image`, `title`, `description`, `date`, `day_week`, `hour`, `max`, `min_team`, `max_team`, `date_end_reg`) VALUES
-(1, 'ardilla.jpg', 'Unreal Tournament', 'BLABLABLABLALBLALBLABLBALABLBALLBALALBBLALBBLBALLBALBLB', '2018-01-13 21:00:00', 'Sábado', '21:00', 32, 1, 1, NULL),
-(2, 'ardilla.jpg', 'Rocket League', 'BLABLALBLALBALBLBALBLABLLBALBLALBALBLBALBLABLABLALBLALBA', '2018-01-13 18:00:00', 'Sábado', '18:00', 32, 2, 2, '2018-01-08 00:00:00'),
-(3, 'ardilla.jpg', 'Hearthstone', 'BLALBALBLBLABLBALBLALABLLABLA', '2018-01-14 16:00:00', 'Domingo', '16:00', 16, 4, 4, '2018-01-16 00:00:00');
+-- ----------------------------
+-- Table structure for participants
+-- ----------------------------
+DROP TABLE IF EXISTS `participants`;
+CREATE TABLE `participants` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user` int(11) NOT NULL,
+  `team` int(11) NOT NULL,
+  `game` int(11) NOT NULL,
+  `position` int(11) DEFAULT NULL,
+  `register_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user` (`user`),
+  KEY `team` (`team`),
+  KEY `game` (`game`),
+  CONSTRAINT `participants_ibfk_1` FOREIGN KEY (`user`) REFERENCES `users` (`id`),
+  CONSTRAINT `participants_ibfk_2` FOREIGN KEY (`team`) REFERENCES `teams_participants` (`id`),
+  CONSTRAINT `participants_ibfk_3` FOREIGN KEY (`game`) REFERENCES `games` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 
--- --------------------------------------------------------
+-- ----------------------------
+-- Records of participants
+-- ----------------------------
+INSERT INTO `participants` VALUES ('1', '1', '1', '1', '1', '2018-01-29 23:47:46');
+INSERT INTO `participants` VALUES ('2', '2', '1', '1', '2', '2018-01-29 23:51:42');
 
---
--- Estructura de tabla para la tabla `game_points`
---
-
-CREATE TABLE `game_points` (
-  `id_game` int(11) NOT NULL,
+-- ----------------------------
+-- Table structure for points_games
+-- ----------------------------
+DROP TABLE IF EXISTS `points_games`;
+CREATE TABLE `points_games` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type_game` int(11) DEFAULT NULL,
   `position` int(11) NOT NULL,
-  `points` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+  `points` int(11) NOT NULL,
+  PRIMARY KEY (`id`,`position`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 
--- --------------------------------------------------------
+-- ----------------------------
+-- Records of points_games
+-- ----------------------------
+INSERT INTO `points_games` VALUES ('1', '1', '1', '10');
+INSERT INTO `points_games` VALUES ('1', '1', '2', '0');
 
---
--- Estructura de tabla para la tabla `game_users`
---
+-- ----------------------------
+-- Table structure for points_users
+-- ----------------------------
+DROP TABLE IF EXISTS `points_users`;
+CREATE TABLE `points_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user` int(11) NOT NULL,
+  `points` int(11) NOT NULL,
+  `description` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user` (`user`),
+  CONSTRAINT `points_users_ibfk_1` FOREIGN KEY (`user`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `game_users` (
-  `id_game` int(11) NOT NULL,
-  `id_user` int(11) NOT NULL,
-  `id_team` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+-- ----------------------------
+-- Records of points_users
+-- ----------------------------
+INSERT INTO `points_users` VALUES ('1', '1', '10', '');
+INSERT INTO `points_users` VALUES ('2', '2', '21', null);
 
---
--- Volcado de datos para la tabla `game_users`
---
-
-INSERT INTO `game_users` (`id_game`, `id_user`, `id_team`) VALUES
-(1, 1, NULL),
-(3, 1, NULL);
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `roles`
---
-
+-- ----------------------------
+-- Table structure for roles
+-- ----------------------------
+DROP TABLE IF EXISTS `roles`;
 CREATE TABLE `roles` (
-  `id` int(11) NOT NULL,
-  `name` varchar(100) COLLATE utf8_spanish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
---
--- Volcado de datos para la tabla `roles`
---
+-- ----------------------------
+-- Records of roles
+-- ----------------------------
+INSERT INTO `roles` VALUES ('1', 'GOD');
+INSERT INTO `roles` VALUES ('2', 'ADMIN');
+INSERT INTO `roles` VALUES ('3', 'USER');
 
-INSERT INTO `roles` (`id`, `name`) VALUES
-(1, 'god'),
-(2, 'admin'),
-(3, 'user');
+-- ----------------------------
+-- Table structure for teams_participants
+-- ----------------------------
+DROP TABLE IF EXISTS `teams_participants`;
+CREATE TABLE `teams_participants` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(60) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 
--- --------------------------------------------------------
+-- ----------------------------
+-- Records of teams_participants
+-- ----------------------------
+INSERT INTO `teams_participants` VALUES ('1', 'EQUIPO ALFA');
 
---
--- Estructura de tabla para la tabla `teams`
---
+-- ----------------------------
+-- Table structure for teams_users
+-- ----------------------------
+DROP TABLE IF EXISTS `teams_users`;
+CREATE TABLE `teams_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `color` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `teams` (
-  `id` int(11) NOT NULL,
-  `name` varchar(100) COLLATE utf8_spanish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+-- ----------------------------
+-- Records of teams_users
+-- ----------------------------
+INSERT INTO `teams_users` VALUES ('1', 'JAJA', 'c-red');
 
--- --------------------------------------------------------
+-- ----------------------------
+-- Table structure for type_games
+-- ----------------------------
+DROP TABLE IF EXISTS `type_games`;
+CREATE TABLE `type_games` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
---
--- Estructura de tabla para la tabla `users`
---
+-- ----------------------------
+-- Records of type_games
+-- ----------------------------
+INSERT INTO `type_games` VALUES ('1', 'Torneo');
+INSERT INTO `type_games` VALUES ('2', 'Producción');
+INSERT INTO `type_games` VALUES ('3', 'Minijuego');
 
+-- ----------------------------
+-- Table structure for users
+-- ----------------------------
+DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
-  `nick` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
-  `pass` varchar(255) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `email` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
+  `nick` varchar(20) NOT NULL,
+  `email` varchar(60) NOT NULL,
+  `pass` varchar(255) NOT NULL,
+  `team` int(11) DEFAULT NULL,
   `role` int(11) DEFAULT NULL,
-  `cryp` varchar(64) COLLATE utf8_spanish_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+  `cryp` varchar(64) DEFAULT NULL,
+  `date_c` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nick` (`nick`),
+  UNIQUE KEY `email` (`email`),
+  KEY `role` (`role`),
+  KEY `team` (`team`),
+  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role`) REFERENCES `roles` (`id`),
+  CONSTRAINT `users_ibfk_2` FOREIGN KEY (`team`) REFERENCES `teams_users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Volcado de datos para la tabla `users`
---
-
-INSERT INTO `users` (`id`, `nick`, `pass`, `email`, `role`, `cryp`) VALUES
-(1, 'rgeo', '0f12d74ba9f4ba52b2852f7f0521d845', 'hermidamourelle@gmail.com', 3, 'cf5d56834a71d3bc9fbf5c640fd559fd');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `winners`
---
-
-CREATE TABLE `winners` (
-  `id_game` int(11) NOT NULL,
-  `id_user` int(11) NOT NULL,
-  `position` int(11) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
-
---
--- Índices para tablas volcadas
---
-
---
--- Indices de la tabla `games`
---
-ALTER TABLE `games`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `game_points`
---
-ALTER TABLE `game_points`
-  ADD PRIMARY KEY (`id_game`,`position`);
-
---
--- Indices de la tabla `game_users`
---
-ALTER TABLE `game_users`
-  ADD PRIMARY KEY (`id_game`,`id_user`),
-  ADD KEY `id_user` (`id_user`),
-  ADD KEY `id_team` (`id_team`);
-
---
--- Indices de la tabla `roles`
---
-ALTER TABLE `roles`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `teams`
---
-ALTER TABLE `teams`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `role` (`role`);
-
---
--- Indices de la tabla `winners`
---
-ALTER TABLE `winners`
-  ADD PRIMARY KEY (`id_game`,`id_user`),
-  ADD KEY `id_user` (`id_user`);
-
---
--- AUTO_INCREMENT de las tablas volcadas
---
-
---
--- AUTO_INCREMENT de la tabla `games`
---
-ALTER TABLE `games`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
---
--- AUTO_INCREMENT de la tabla `roles`
---
-ALTER TABLE `roles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
---
--- AUTO_INCREMENT de la tabla `teams`
---
-ALTER TABLE `teams`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT de la tabla `users`
---
-ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
---
--- Restricciones para tablas volcadas
---
-
---
--- Filtros para la tabla `game_points`
---
-ALTER TABLE `game_points`
-  ADD CONSTRAINT `game_points_ibfk_1` FOREIGN KEY (`id_game`) REFERENCES `games` (`id`);
-
---
--- Filtros para la tabla `game_users`
---
-ALTER TABLE `game_users`
-  ADD CONSTRAINT `game_users_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `game_users_ibfk_2` FOREIGN KEY (`id_game`) REFERENCES `games` (`id`),
-  ADD CONSTRAINT `game_users_ibfk_3` FOREIGN KEY (`id_team`) REFERENCES `teams` (`id`);
-
---
--- Filtros para la tabla `users`
---
-ALTER TABLE `users`
-  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role`) REFERENCES `roles` (`id`);
-
---
--- Filtros para la tabla `winners`
---
-ALTER TABLE `winners`
-  ADD CONSTRAINT `winners_ibfk_1` FOREIGN KEY (`id_game`) REFERENCES `games` (`id`),
-  ADD CONSTRAINT `winners_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`);
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+-- ----------------------------
+-- Records of users
+-- ----------------------------
+INSERT INTO `users` VALUES ('1', 'lxlDanilxl', 'lxlDanilxlpro@gmail.com', '81dc9bdb52d04dc20036dbd8313ed055', '1', '1', null, '2018-01-29 22:08:56');
+INSERT INTO `users` VALUES ('2', 'pruebas', '', '', '1', '3', null, '2018-01-29 23:50:37');

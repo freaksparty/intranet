@@ -43,7 +43,6 @@
 				<button type='submit' formmethod='post' class='btn btn-primary' name='listgame' value='edit'>Modificar</button>
 				<button type='submit' formmethod='post' class='btn btn-primary' name='listgame' value='del'>Eliminar</button>'";
 		}
-		print_r($_COOKIE);
 	}
 	function confirmdel() {
 		if (!no_permission(2)) {
@@ -53,8 +52,7 @@
 	}
 	function gamemngm() {
 			if ($_POST['listgame']==='del') {
-				print_r($_POST);
-				$_COOKIE['evento']=$_POST['evento'];
+				setcookie("evento", $_POST['evento']);
 				confirmdel();
 			} elseif ($_POST['listgame']==='edit') {
 				editgame();
@@ -161,7 +159,8 @@
 			$result->bindParam(':id', $_COOKIE['evento']);
 			$result->execute();
 		}
-		//unset($_COOKIE, $_POST);
+		setcookie('evento', null, -1);
+		unset($_POST);
 		header("Refresh:0; url=http://localhost/intranet/admin.php?f=ver_juego");
 	}
 ?>
