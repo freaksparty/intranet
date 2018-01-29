@@ -1,256 +1,296 @@
--- phpMyAdmin SQL Dump
--- version 4.6.6deb5
--- https://www.phpmyadmin.net/
+-- MySQL dump 10.16  Distrib 10.1.29-MariaDB, for debian-linux-gnu (x86_64)
 --
--- Servidor: localhost:3306
--- Tiempo de generación: 15-01-2018 a las 16:18:29
--- Versión del servidor: 5.7.20
--- Versión de PHP: 7.0.27-1
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
-
+-- Host: localhost    Database: intranet
+-- ------------------------------------------------------
+-- Server version	10.1.29-MariaDB-6
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Base de datos: `intranet`
+-- Table structure for table `class_games`
 --
 
--- --------------------------------------------------------
+DROP TABLE IF EXISTS `class_games`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `class_games` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Estructura de tabla para la tabla `games`
+-- Dumping data for table `class_games`
 --
 
+LOCK TABLES `class_games` WRITE;
+/*!40000 ALTER TABLE `class_games` DISABLE KEYS */;
+/*!40000 ALTER TABLE `class_games` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `games`
+--
+
+DROP TABLE IF EXISTS `games`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `games` (
-  `id` int(11) NOT NULL,
-  `image` varchar(255) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `title` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
-  `description` varchar(5000) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `date` datetime DEFAULT NULL,
-  `day_week` varchar(10) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `hour` varchar(5) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `max` int(11) NOT NULL DEFAULT '0',
-  `min_team` int(11) NOT NULL DEFAULT '1',
-  `max_team` int(11) NOT NULL DEFAULT '1',
-  `date_end_reg` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) DEFAULT NULL,
+  `type` int(11) DEFAULT NULL,
+  `class` int(11) DEFAULT NULL,
+  `max` int(11) DEFAULT NULL,
+  `min` int(11) DEFAULT NULL,
+  `date_max` datetime DEFAULT NULL,
+  `date_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `type` (`type`),
+  KEY `class` (`class`),
+  CONSTRAINT `games_ibfk_1` FOREIGN KEY (`type`) REFERENCES `type_games` (`id`),
+  CONSTRAINT `games_ibfk_2` FOREIGN KEY (`class`) REFERENCES `class_games` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Volcado de datos para la tabla `games`
+-- Dumping data for table `games`
 --
 
-INSERT INTO `games` (`id`, `image`, `title`, `description`, `date`, `day_week`, `hour`, `max`, `min_team`, `max_team`, `date_end_reg`) VALUES
-(1, 'ardilla.jpg', 'Unreal Tournament', 'BLABLABLABLALBLALBLABLBALABLBALLBALALBBLALBBLBALLBALBLB', '2018-01-13 21:00:00', 'Sábado', '21:00', 32, 1, 1, NULL),
-(2, 'ardilla.jpg', 'Rocket League', 'BLABLALBLALBALBLBALBLABLLBALBLALBALBLBALBLABLABLALBLALBA', '2018-01-13 18:00:00', 'Sábado', '18:00', 32, 2, 2, '2018-01-08 00:00:00'),
-(3, 'ardilla.jpg', 'Hearthstone', 'BLALBALBLBLABLBALBLALABLLABLA', '2018-01-14 16:00:00', 'Domingo', '16:00', 16, 4, 4, '2018-01-16 00:00:00');
-
--- --------------------------------------------------------
+LOCK TABLES `games` WRITE;
+/*!40000 ALTER TABLE `games` DISABLE KEYS */;
+/*!40000 ALTER TABLE `games` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
--- Estructura de tabla para la tabla `game_points`
+-- Table structure for table `participants`
 --
 
-CREATE TABLE `game_points` (
-  `id_game` int(11) NOT NULL,
+DROP TABLE IF EXISTS `participants`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `participants` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user` int(11) NOT NULL,
+  `team` int(11) NOT NULL,
+  `game` int(11) NOT NULL,
+  `position` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user` (`user`),
+  KEY `team` (`team`),
+  KEY `game` (`game`),
+  CONSTRAINT `participants_ibfk_1` FOREIGN KEY (`user`) REFERENCES `users` (`id`),
+  CONSTRAINT `participants_ibfk_2` FOREIGN KEY (`team`) REFERENCES `teams_participants` (`id`),
+  CONSTRAINT `participants_ibfk_3` FOREIGN KEY (`game`) REFERENCES `games` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `participants`
+--
+
+LOCK TABLES `participants` WRITE;
+/*!40000 ALTER TABLE `participants` DISABLE KEYS */;
+/*!40000 ALTER TABLE `participants` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `points_games`
+--
+
+DROP TABLE IF EXISTS `points_games`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `points_games` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type_game` int(11) DEFAULT NULL,
   `position` int(11) NOT NULL,
-  `points` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `game_users`
---
-
-CREATE TABLE `game_users` (
-  `id_game` int(11) NOT NULL,
-  `id_user` int(11) NOT NULL,
-  `id_team` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+  `points` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Volcado de datos para la tabla `game_users`
+-- Dumping data for table `points_games`
 --
 
-INSERT INTO `game_users` (`id_game`, `id_user`, `id_team`) VALUES
-(1, 1, NULL),
-(3, 1, NULL);
-
--- --------------------------------------------------------
+LOCK TABLES `points_games` WRITE;
+/*!40000 ALTER TABLE `points_games` DISABLE KEYS */;
+/*!40000 ALTER TABLE `points_games` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
--- Estructura de tabla para la tabla `roles`
+-- Table structure for table `points_users`
 --
 
+DROP TABLE IF EXISTS `points_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `points_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user` int(11) NOT NULL,
+  `points` int(11) NOT NULL,
+  `description` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user` (`user`),
+  CONSTRAINT `points_users_ibfk_1` FOREIGN KEY (`user`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `points_users`
+--
+
+LOCK TABLES `points_users` WRITE;
+/*!40000 ALTER TABLE `points_users` DISABLE KEYS */;
+/*!40000 ALTER TABLE `points_users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `roles`
+--
+
+DROP TABLE IF EXISTS `roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `roles` (
-  `id` int(11) NOT NULL,
-  `name` varchar(100) COLLATE utf8_spanish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Volcado de datos para la tabla `roles`
+-- Dumping data for table `roles`
 --
 
-INSERT INTO `roles` (`id`, `name`) VALUES
-(1, 'god'),
-(2, 'admin'),
-(3, 'user');
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `teams`
---
-
-CREATE TABLE `teams` (
-  `id` int(11) NOT NULL,
-  `name` varchar(100) COLLATE utf8_spanish_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
-
--- --------------------------------------------------------
+LOCK TABLES `roles` WRITE;
+/*!40000 ALTER TABLE `roles` DISABLE KEYS */;
+INSERT INTO `roles` VALUES (1,'GOD'),(2,'ADMIN'),(3,'USER');
+/*!40000 ALTER TABLE `roles` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
--- Estructura de tabla para la tabla `users`
+-- Table structure for table `teams_participants`
 --
 
+DROP TABLE IF EXISTS `teams_participants`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `teams_participants` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(60) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `teams_participants`
+--
+
+LOCK TABLES `teams_participants` WRITE;
+/*!40000 ALTER TABLE `teams_participants` DISABLE KEYS */;
+/*!40000 ALTER TABLE `teams_participants` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `teams_users`
+--
+
+DROP TABLE IF EXISTS `teams_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `teams_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `color` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `teams_users`
+--
+
+LOCK TABLES `teams_users` WRITE;
+/*!40000 ALTER TABLE `teams_users` DISABLE KEYS */;
+/*!40000 ALTER TABLE `teams_users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `type_games`
+--
+
+DROP TABLE IF EXISTS `type_games`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `type_games` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `type_games`
+--
+
+LOCK TABLES `type_games` WRITE;
+/*!40000 ALTER TABLE `type_games` DISABLE KEYS */;
+/*!40000 ALTER TABLE `type_games` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
-  `nick` varchar(30) COLLATE utf8_spanish_ci NOT NULL,
-  `pass` varchar(255) COLLATE utf8_spanish_ci DEFAULT NULL,
-  `email` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
+  `nick` varchar(20) NOT NULL,
+  `email` varchar(60) NOT NULL,
+  `pass` varchar(255) NOT NULL,
+  `team` int(11) DEFAULT NULL,
   `role` int(11) DEFAULT NULL,
-  `cryp` varchar(64) COLLATE utf8_spanish_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+  `cryp` varchar(64) DEFAULT NULL,
+  `date_c` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nick` (`nick`),
+  UNIQUE KEY `email` (`email`),
+  KEY `role` (`role`),
+  KEY `team` (`team`),
+  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role`) REFERENCES `roles` (`id`),
+  CONSTRAINT `users_ibfk_2` FOREIGN KEY (`team`) REFERENCES `teams_users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Volcado de datos para la tabla `users`
+-- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `nick`, `pass`, `email`, `role`, `cryp`) VALUES
-(1, 'rgeo', '0f12d74ba9f4ba52b2852f7f0521d845', 'hermidamourelle@gmail.com', 3, 'cf5d56834a71d3bc9fbf5c640fd559fd');
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `winners`
---
-
-CREATE TABLE `winners` (
-  `id_game` int(11) NOT NULL,
-  `id_user` int(11) NOT NULL,
-  `position` int(11) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
-
---
--- Índices para tablas volcadas
---
-
---
--- Indices de la tabla `games`
---
-ALTER TABLE `games`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `game_points`
---
-ALTER TABLE `game_points`
-  ADD PRIMARY KEY (`id_game`,`position`);
-
---
--- Indices de la tabla `game_users`
---
-ALTER TABLE `game_users`
-  ADD PRIMARY KEY (`id_game`,`id_user`),
-  ADD KEY `id_user` (`id_user`),
-  ADD KEY `id_team` (`id_team`);
-
---
--- Indices de la tabla `roles`
---
-ALTER TABLE `roles`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `teams`
---
-ALTER TABLE `teams`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `role` (`role`);
-
---
--- Indices de la tabla `winners`
---
-ALTER TABLE `winners`
-  ADD PRIMARY KEY (`id_game`,`id_user`),
-  ADD KEY `id_user` (`id_user`);
-
---
--- AUTO_INCREMENT de las tablas volcadas
---
-
---
--- AUTO_INCREMENT de la tabla `games`
---
-ALTER TABLE `games`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
---
--- AUTO_INCREMENT de la tabla `roles`
---
-ALTER TABLE `roles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
---
--- AUTO_INCREMENT de la tabla `teams`
---
-ALTER TABLE `teams`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT de la tabla `users`
---
-ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
---
--- Restricciones para tablas volcadas
---
-
---
--- Filtros para la tabla `game_points`
---
-ALTER TABLE `game_points`
-  ADD CONSTRAINT `game_points_ibfk_1` FOREIGN KEY (`id_game`) REFERENCES `games` (`id`);
-
---
--- Filtros para la tabla `game_users`
---
-ALTER TABLE `game_users`
-  ADD CONSTRAINT `game_users_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `game_users_ibfk_2` FOREIGN KEY (`id_game`) REFERENCES `games` (`id`),
-  ADD CONSTRAINT `game_users_ibfk_3` FOREIGN KEY (`id_team`) REFERENCES `teams` (`id`);
-
---
--- Filtros para la tabla `users`
---
-ALTER TABLE `users`
-  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role`) REFERENCES `roles` (`id`);
-
---
--- Filtros para la tabla `winners`
---
-ALTER TABLE `winners`
-  ADD CONSTRAINT `winners_ibfk_1` FOREIGN KEY (`id_game`) REFERENCES `games` (`id`),
-  ADD CONSTRAINT `winners_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`);
-
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2018-01-29 19:19:18
