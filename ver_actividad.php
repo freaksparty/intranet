@@ -32,7 +32,7 @@
                             <img src="img/ardilla.jpg"/>
                             <span class="text-center"><h2><?=$game['title']?></h2></span>
                         </div>
-                        <div class='col-xs-12 descr'><p><?=$game['description']?></p></div>
+                        <div class='col-xs-12 descr'><p><?=utf8_encode($game['description'])?></p></div>
                         <?php
                             $now=strtotime(date("Y-m-d H:i:s"));
                             $date_game=strtotime($game['date_end_reg']);

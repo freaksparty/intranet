@@ -93,3 +93,6 @@ form .invalid-feedback{
         top: 30%;
     }
 }
+ table.nosplit tr td{
+        page-break-inside: avoid;
+    }
