@@ -48,6 +48,7 @@ DROP TABLE IF EXISTS `games`;
 CREATE TABLE `games` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL,
+  `image` varchar(255) DEFAULT NULL,
   `type` int(11) DEFAULT NULL,
   `class` int(11) DEFAULT NULL,
   `max` int(11) DEFAULT NULL,
