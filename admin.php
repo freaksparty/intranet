@@ -1,7 +1,7 @@
 <?php
 	include "comun/vars.php";
-	include "admin/necesario.php";
-	no_permission(2);
+	include "admin/games.php";
+	if (!no_permission(4)) {
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -54,3 +54,6 @@
 		}
 	?>
 </html>
+<?php
+	}
+?>

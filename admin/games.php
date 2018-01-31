@@ -1,97 +1,75 @@
 <?php
-	include "./api/config.php";
+	include './api/config.php';
+	include 'config.php';
 
-	ini_set('display_errors', 1);
-	ini_set('display_startup_errors', 1);
-	error_reporting(E_ALL);
-
-	session_start();
-	$userid=$_SESSION['user_id'];
-
-	function get_rol_level() {
-		GLOBAL $conn, $userid;
-		$qry="SELECT role FROM users WHERE id = :id";
-		$result=$conn->prepare($qry);
-		$result->bindParam(':id',$userid);
-		$result->execute();
-		$rol=$result->fetchColumn();
-		if (!isset($_SESSION['user_id'])) {
-			$rol=3;
-		}
-		return $rol;
-	}
-	function no_permission($rol) {
-		if (get_rol_level()>$rol) {
-			echo "Parece que te equivocaste, pero no tienes permiso para estar aquí.";
-			echo "<script>alert('CORRE INSENSATO!')</script>";
-			header("Refresh:0; url=http://localhost/intranet");
-			return 0;
-		}
-	}
 	function gettypes($id) {
-		GLOBAL $conn;
-		$qry="SELECT name FROM type_games WHERE id=:id";
-		$result=$conn->prepare($qry);
-		$result->bindParam(':id', $id);
-		$result->execute();
-		$type=$result->fetchColumn();
-		return $type;
+		if (!no_permission(2)) {	
+			GLOBAL $conn;
+			$qry="SELECT name FROM type_games WHERE id=:id";
+			$result=$conn->prepare($qry);
+			$result->bindParam(':id', $id);
+			$result->execute();
+			$type=$result->fetchColumn();
+			return $type;
+		}
 	}
 	function selecttype($id) {
-		GLOBAL $conn;
-		$qry="SELECT * FROM type_games";
-		$result=$conn->prepare($qry);
-		$result->execute();
+		if(!no_permission(2)){
+			GLOBAL $conn;
+			$qry="SELECT * FROM type_games";
+			$result=$conn->prepare($qry);
+			$result->execute();
 
-		$select="<select form='edit' name='a4'>";
-		if (!isset($id)) {
-			$id=1;
-		}
-		while ($types = $result->fetch()) {
-			if (isset($id)) {
-				if (gettypes($id)==$types[0]) {
-					$select.="<option selected value='".$types[0]."'>".$types[1]."</option>";
+			$select="<select form='edit' name='a4'>";
+			while ($types = $result->fetch()) {
+				if (isset($id)) {
+					if (gettypes($id)==$types[0]) {
+						$select.="<option selected value='".$types[0]."'>".$types[1]."</option>";
+					} else {
+						$select.="<option value='".$types[0]."'>".$types[1]."</option>";
+					}
 				} else {
 					$select.="<option value='".$types[0]."'>".$types[1]."</option>";
 				}
-			} else {
-				$select.="<option value='".$types[0]."'>".$types[1]."</option>";
 			}
+			$select.="</select>";
+			return $select;
+			unset($select);
 		}
-		$select.="</select>";
-		return $select;
-		unset($select);
 	}
-		function getclasses($id) {
-		GLOBAL $conn;
-		$qry="SELECT name FROM class_games WHERE id=:id";
-		$result=$conn->prepare($qry);
-		$result->bindParam(':id', $id);
-		$result->execute();
-		$class=$result->fetchColumn();
-		return $class;
+	function getclasses($id) {
+		if (!no_permission(2))
+			GLOBAL $conn;
+			$qry="SELECT name FROM class_games WHERE id=:id";
+			$result=$conn->prepare($qry);
+			$result->bindParam(':id', $id);
+			$result->execute();
+			$class=$result->fetchColumn();
+			return $class;
 	}
 	function selectclass($id) {
-		GLOBAL $conn;
-		$qry="SELECT * FROM class_games";
-		$result=$conn->prepare($qry);
-		$result->execute();
+		if (!no_permission(2)) {
+			GLOBAL $conn;
+			$qry="SELECT * FROM class_games";
+			$result=$conn->prepare($qry);
+			$result->execute();
 
-		$select="<select form='edit' name='a5'>";
-		while ($classes = $result->fetch()) {
-			if (isset($id)) {
-				if (getclasses($id)==$classes[0]) {
-					$select.="<option selected value='".$classes[0]."'>".$classes[1]."</option>";
+			$select="<select form='edit' name='a5'>";
+			while ($classes = $result->fetch()) {
+				if (isset($id)) {
+					if (getclasses($id)==$classes[0]) {
+						$select.="<option selected value='".$classes[0]."'>".$classes[1]."</option>";
+					} else {
+						$select.="<option value='".$classes[0]."'>".$classes[1]."</option>";
+					}
 				} else {
 					$select.="<option value='".$classes[0]."'>".$classes[1]."</option>";
 				}
-			} else {
-				$select.="<option value='".$classes[0]."'>".$classes[1]."</option>";
 			}
+			$select.="</select>";
+			return $select;
+			unset($select);
 		}
-		$select.="</select>";
-		return $select;
-		unset($select);
 	}
 	function listgames() {
 		if (!no_permission(2)) {
@@ -144,12 +122,14 @@
 		}
 	}
 	function gamemngm() {
+		if (!no_permission(2)) {
 			if ($_POST['listgame']==='del') {
 				setcookie("evento", $_POST['evento']);
 				confirmdel();
 			} elseif ($_POST['listgame']==='edit') {
 				editgame();
 			}
+		}
 	}
 	function editgame() {
 		if (!no_permission(2)) {
