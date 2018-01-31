@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2018-01-30 00:50:36
+Date: 2018-01-31 17:42:18
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -38,11 +38,13 @@ DROP TABLE IF EXISTS `games`;
 CREATE TABLE `games` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
   `type` int(11) DEFAULT NULL,
   `class` int(11) DEFAULT NULL,
   `max` int(11) DEFAULT NULL,
   `min` int(11) DEFAULT NULL,
+  `date_event` datetime DEFAULT NULL,
   `date_max` datetime DEFAULT NULL,
   `date_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -55,7 +57,7 @@ CREATE TABLE `games` (
 -- ----------------------------
 -- Records of games
 -- ----------------------------
-INSERT INTO `games` VALUES ('1', 'UNREAL TOURNEMENT', 'ardilla.jpg', '1', '1', '1', '1', null, '2018-01-29 23:45:37');
+INSERT INTO `games` VALUES ('1', 'UNREAL TOURNEMENT', null, 'ardilla.jpg', '1', '1', '1', '1', null, null, '2018-01-29 23:45:37');
 
 -- ----------------------------
 -- Table structure for participants
@@ -211,5 +213,5 @@ CREATE TABLE `users` (
 -- ----------------------------
 -- Records of users
 -- ----------------------------
-INSERT INTO `users` VALUES ('1', 'lxlDanilxl', 'lxlDanilxlpro@gmail.com', '81dc9bdb52d04dc20036dbd8313ed055', '1', '1', null, '2018-01-29 22:08:56');
+INSERT INTO `users` VALUES ('1', 'lxlDanilxl', 'lxlDanilxlpro@gmail.com', '81dc9bdb52d04dc20036dbd8313ed055', '1', '1', 'f56bb2bec93bc995de59478a9063ce4d', '2018-01-29 22:08:56');
 INSERT INTO `users` VALUES ('2', 'pruebas', '', '', '1', '3', null, '2018-01-29 23:50:37');

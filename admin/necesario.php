@@ -28,15 +28,85 @@
 			return 0;
 		}
 	}
+	function gettypes($id) {
+		GLOBAL $conn;
+		$qry="SELECT name FROM type_games WHERE id=:id";
+		$result=$conn->prepare($qry);
+		$result->bindParam(':id', $id);
+		$result->execute();
+		$type=$result->fetchColumn();
+		return $type;
+	}
+	function selecttype() {
+		GLOBAL $conn;
+		$qry="SELECT * FROM type_games";
+		$result=$conn->prepare($qry);
+		$result->execute();
+
+		echo "<select name='type'>";
+		while ($types = $result->fetch()) {
+			echo "<option value='".$types[0]."'>".$types[1]."</option>";
+		}
+		echo "</select>";
+	}
+		function getclasses($id) {
+		GLOBAL $conn;
+		$qry="SELECT name FROM class_games WHERE id=:id";
+		$result=$conn->prepare($qry);
+		$result->bindParam(':id', $id);
+		$result->execute();
+		$class=$result->fetchColumn();
+		return $class;
+	}
+	function selectclass() {
+		GLOBAL $conn;
+		$qry="SELECT * FROM class_games";
+		$result=$conn->prepare($qry);
+		$result->execute();
+
+		echo "<select name='class'>";
+		while ($classes = $result->fetch()) {
+			echo "<option value='".$classes[0]."'>".$classes[1]."</option>";
+		}
+		echo "</select>";
+	}
 	function listgames() {
 		if (!no_permission(2)) {
 			GLOBAL $conn;
 			$qry="SELECT * FROM games";
 			$result=$conn->prepare($qry);
 			$result->execute();
-			echo "<table border='1'><tr><td>ID</td><td>Título</td><td>Descripción</td><td>Fecha</td><td>Día</td><td>Hora</td><td>Máx</td><td>Equipo mínimo</td><td>Equipo máximo</td><td>Fin registro</td><td>Seleccionar</td></tr><form method='post' action='http://localhost/intranet/admin.php?f=gamemngm'>";
+			echo 
+				"<table border='1'>
+					<tr>
+						<td>ID</td>
+						<td>Título</td>
+						<td>Descripción</td>
+						<td>Imagen</td>
+						<td>Tipo</td>
+						<td>Clase</td>
+						<td>Equipo mínimo</td>
+						<td>Equipo máximo</td>
+						<td>Fecha</td>
+						<td>Fin registro</td>
+						<td>Seleccionar</td>
+					</tr>
+					<form method='post' action='http://localhost/intranet/admin.php?f=gamemngm'>";
 			while ($eventos = $result->fetch()) {
-				echo "<tr><td>".$eventos[0]."</td><td>".utf8_encode($eventos[2])."</td><td>".utf8_encode($eventos[3])."</td><td>".$eventos[4]."</td><td>".utf8_encode($eventos[5])."</td><td>".$eventos[6]."</td><td>".$eventos[7]."</td><td>".$eventos[8]."</td><td>".$eventos[9]."</td><td>".$eventos[10]."</td><td><input type='radio' name='evento' value='".$eventos[0]."'</tr>";
+				echo "
+				<tr>
+					<td>".$eventos[0]."</td>
+					<td>".utf8_encode($eventos[1])."</td>
+					<td>".utf8_encode($eventos[2])."</td>
+					<td>".$eventos[3]."</td>
+					<td>".utf8_encode(gettypes($eventos[4]))."</td>
+					<td>".utf8_encode(getclasses($eventos[5]))."</td>
+					<td>".$eventos[6]."</td>
+					<td>".$eventos[7]."</td>
+					<td>".$eventos[8]."</td>
+					<td>".$eventos[9]."</td>
+					<td><input type='radio' name='evento' value='".$eventos[0]."'</td>
+				</tr>";
 			}
 			echo "</table>
 				<br>
