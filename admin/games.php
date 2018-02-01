@@ -87,8 +87,8 @@
 						<td>Imagen</td>
 						<td>Tipo</td>
 						<td>Clase</td>
-						<td>Equipo mínimo</td>
 						<td>Equipo máximo</td>
+						<td>Equipo mínimo</td>
 						<td>Fecha</td>
 						<td>Fin registro</td>
 						<td>Seleccionar</td>
@@ -132,7 +132,8 @@
 				setcookie("evento", $_POST['evento']);
 				editgame();
 			} elseif ($_POST['listgame']==='points') {
-				setcookie("evento", $_POST['evento'], time()+30);
+				setcookie("evento", $_POST['evento']);
+				$_COOKIE['evento']=$_POST['evento'];
 				PointsXGame();
 			}
 		}
@@ -154,8 +155,8 @@
 						<td>Imagen</td>
 						<td>Tipo</td>
 						<td>Clase</td>
-						<td>Equipo mínimo</td>
 						<td>Equipo máximo</td>
+						<td>Equipo mínimo</td>
 						<td>Fecha</td>
 						<td>Fin registro</td>
 					</tr>";
@@ -218,8 +219,8 @@
 						<td>Imagen</td>
 						<td>Tipo</td>
 						<td>Clase</td>
-						<td>Equipo mínimo</td>
 						<td>Equipo máximo</td>
+						<td>Equipo mínimo</td>
 						<td>Fecha</td>
 						<td>Fin registro</td>
 					</tr>";
@@ -282,21 +283,22 @@
 			$qry="SELECT * FROM points_games WHERE id=:id";
 			$result=$conn->prepare($qry);
 			$result->bindParam(':id', $_COOKIE['evento']);
-			$PTable=$result->fetch();
-			print_r($_COOKIE['evento']);
-			print_r($PTable[0]);
+			$result->execute();
+			$PTable=$result->fetchAll();
 
 			$qry="SELECT name FROM games WHERE id=:id";
 			$result=$conn->prepare($qry);
 			$result->bindParam(':id', $_COOKIE['evento']);
+			$result->execute();
 			$EName=$result->fetchColumn();
 
 			$qry="SELECT type FROM games WHERE id=:id";
 			$result=$conn->prepare($qry);
 			$result->bindParam(':id', $_COOKIE['evento']);
+			$result->execute();
 			$type=$result->fetchColumn();
 
-			echo "Editar posiciones de: ".$EName;
+			echo "Editar posiciones de: <b>".$EName."</b>";
 			echo "
 				<table>
 					<tr>
@@ -316,13 +318,13 @@
 				echo "
 					<tr>
 						<td>
-							<input type='text' readonly='readonly' name='a0' value='".$elem[2]."'>
+							<input type='text' readonly='readonly' name='a0[]' value='".$elem[2]."'>
 						</td>
 						<td>
 							<input type='text' readonly='readonly' value='".gettypes($elem[1])."'>
 						</td>
 						<td>
-							<input type='text' name=':a1' value='".$elem[3]."'>
+							<input type='text' name='a1[]' value='".$elem[3]."'>
 						</td>
 					</tr>		
 				";	
@@ -332,14 +334,23 @@
 	}
 	function PointsXGameSave() {
 		if (!no_permission(2)) {
-			$qry="UPDATE points_games SET `points`=:pts WHERE position=:pos AND id=:id";
-			$result=$conn->prepare($qry);
-			$result->bindParam(':pts', $_POST[':a1']);
-			$result->bindParam(':pos', $_POST[':a2']);
-			$result->bindParam(':id', $_COOKIE['evento']);
-			$result->execute();
+			$i=0;
+			$tpost['a0']=$_POST['a0'];
+			$tpost['a1']=$_POST['a1'];
+			$j=count(array_keys($_POST['a0']))+1;
+			while ($i<$j) {
+				GLOBAL $conn;
+				$qry="UPDATE points_games SET `points`=:pts WHERE position=:pos AND id=:id";
+				$result=$conn->prepare($qry);
+				$result->bindParam(':pts', $tpost['a1'][$i]);
+				$result->bindParam(':pos', $tpost['a0'][$i]);
+				$result->bindParam(':id', $_COOKIE['evento']);
+				$result->execute();
+				$i=$i+1;
+			}
 		}
-		setcookie('evento', null, -1);
+		unset($_COOKIE['evento']);
+		header("Refresh:0; url=http://localhost/intranet/admin.php?f=ver_juego");
 	}
 	function PointsXGamePrepare() {
 		if (!no_permission(2)) {
@@ -370,11 +381,9 @@
 					$result->bindParam(':id', $_COOKIE['evento']);
 					$result->bindParam(':pos', $pos);
 					$result->execute();
-					echo "asd";
 					$pos=$pos+1;
 				}
 			} elseif (($max+1)==$pos) {
-				echo "shiut";
 			} elseif (($max+1)<$pos) {
 				$qry="DELETE FROM points_games WHERE position>:max AND `id`=:id";
 				$result=$conn->prepare($qry);
@@ -382,7 +391,6 @@
 				$result->bindParam(':max', $nmax);
 				$result->bindParam(':id', $_COOKIE['evento']);
 				$result->execute();
-				echo "shist";
 			}
 
 			$qry="SELECT * FROM points_games WHERE id=:id";
