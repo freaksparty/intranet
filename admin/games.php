@@ -1,6 +1,7 @@
 <?php
 	include './api/config.php';
-	include 'config.php';
+	require_once "admin/users.php";
+	require_once "admin/config.php";
 
 	function gettypes($id) {
 		if (!no_permission(2)) {	
@@ -111,6 +112,7 @@
 			}
 			echo "</table>
 				<br>
+				<button type='submit' formmethod='post' class='btn btn-primary' name='listgame' value='points'>Modificar Puntos</button>
 				<button type='submit' formmethod='post' class='btn btn-primary' name='listgame' value='edit'>Modificar</button>
 				<button type='submit' formmethod='post' class='btn btn-primary' name='listgame' value='del'>Eliminar</button>'";
 		}
@@ -118,7 +120,7 @@
 	function confirmdel() {
 		if (!no_permission(2)) {
 			echo "<form method='post' action='admin.php?f=delgame'><script>alert('Estás a punto de eliminar el evento número ".$_COOKIE['evento']."!')</script>
-			<button type='submit' formmethod='post' class='btn btn-primary' name='confirm' value='del'>Confirmar</button>";
+			<button type='submit' formmethod='post' class='btn btn-primary' name='confirm' value='del'>Confirmar</button></form>";
 		}
 	}
 	function gamemngm() {
@@ -127,7 +129,11 @@
 				setcookie("evento", $_POST['evento']);
 				confirmdel();
 			} elseif ($_POST['listgame']==='edit') {
+				setcookie("evento", $_POST['evento']);
 				editgame();
+			} elseif ($_POST['listgame']==='points') {
+				setcookie("evento", $_POST['evento'], time()+30);
+				PointsXGame();
 			}
 		}
 	}
@@ -191,6 +197,8 @@
 				$result->bindParam(':a9', $_POST['a9']);
 				$result->execute();
 			}
+			PointsXGamePrepare();
+			setcookie("evento", null, -1);
 			header("Refresh:0; url=http://localhost/intranet/admin.php?f=ver_juego");
 		}
 	}
@@ -257,7 +265,7 @@
 	}
 	function delgame() {
 		if (!no_permission(2)) {
-			GLOBAL $conn, $_COOKIE;
+			GLOBAL $conn;
 			$qry="DELETE FROM games WHERE id=:id";
 			$result=$conn->prepare($qry);
 			$result->bindParam(':id', $_COOKIE['evento']);
@@ -266,5 +274,141 @@
 		setcookie('evento', null, -1);
 		unset($_POST);
 		header("Refresh:0; url=http://localhost/intranet/admin.php?f=ver_juego");
+	}
+	function PointsXGame() {
+		if(!no_permission(2)) {
+			PointsXGamePrepare();
+			GLOBAL $conn;
+			$qry="SELECT * FROM points_games WHERE id=:id";
+			$result=$conn->prepare($qry);
+			$result->bindParam(':id', $_COOKIE['evento']);
+			$PTable=$result->fetch();
+			print_r($_COOKIE['evento']);
+			print_r($PTable[0]);
+
+			$qry="SELECT name FROM games WHERE id=:id";
+			$result=$conn->prepare($qry);
+			$result->bindParam(':id', $_COOKIE['evento']);
+			$EName=$result->fetchColumn();
+
+			$qry="SELECT type FROM games WHERE id=:id";
+			$result=$conn->prepare($qry);
+			$result->bindParam(':id', $_COOKIE['evento']);
+			$type=$result->fetchColumn();
+
+			echo "Editar posiciones de: ".$EName;
+			echo "
+				<table>
+					<tr>
+						<td>
+							Posición
+						</td>
+						<td>
+							Tipo
+						</td>
+						<td>
+							Puntos
+						</td>
+					</tr><form method='post' action='./admin.php?f=PointsXGameSave'>
+			";
+
+			foreach ($PTable as $elem) {
+				echo "
+					<tr>
+						<td>
+							<input type='text' readonly='readonly' name='a0' value='".$elem[2]."'>
+						</td>
+						<td>
+							<input type='text' readonly='readonly' value='".gettypes($elem[1])."'>
+						</td>
+						<td>
+							<input type='text' name=':a1' value='".$elem[3]."'>
+						</td>
+					</tr>		
+				";	
+			}
+			echo "</table><br><button type='submit' formmethod='post' class='btn btn-primary'>Guardar</button></form>";
+		}
+	}
+	function PointsXGameSave() {
+		if (!no_permission(2)) {
+			$qry="UPDATE points_games SET `points`=:pts WHERE position=:pos AND id=:id";
+			$result=$conn->prepare($qry);
+			$result->bindParam(':pts', $_POST[':a1']);
+			$result->bindParam(':pos', $_POST[':a2']);
+			$result->bindParam(':id', $_COOKIE['evento']);
+			$result->execute();
+		}
+		setcookie('evento', null, -1);
+	}
+	function PointsXGamePrepare() {
+		if (!no_permission(2)) {
+			GLOBAL $conn;
+			$qry="SELECT * FROM points_games WHERE id=:id";
+			$result=$conn->prepare($qry);
+			$result->bindParam(':id', $_COOKIE['evento']);
+			$result->execute();
+			$PTable=$result->fetchAll();
+
+			$qry="SELECT max FROM games WHERE id=:id";
+			$result=$conn->prepare($qry);
+			$result->bindParam(':id', $_COOKIE['evento']);
+			$result->execute();
+			$max=$result->fetchColumn();
+
+			$qry="SELECT type FROM games WHERE id=:id";
+			$result=$conn->prepare($qry);
+			$result->bindParam(':id', $_COOKIE['evento']);
+			$result->execute();
+			$ntype=$result->fetchColumn();
+
+			$pos=count(array_keys($PTable))+1;
+			if (($max+1)>$pos) {
+				while (($max+1)>$pos) {
+					$qry="INSERT INTO points_games (`id`, `position`) VALUES (:id, :pos)";
+					$result=$conn->prepare($qry);
+					$result->bindParam(':id', $_COOKIE['evento']);
+					$result->bindParam(':pos', $pos);
+					$result->execute();
+					echo "asd";
+					$pos=$pos+1;
+				}
+			} elseif (($max+1)==$pos) {
+				echo "shiut";
+			} elseif (($max+1)<$pos) {
+				$qry="DELETE FROM points_games WHERE position>:max";
+				$result=$conn->prepare($qry);
+				$nmax=$max;
+				$result->bindParam(':max', $nmax);
+				$result->execute();
+				echo "shist";
+			}
+			
+			$qry="SELECT * FROM points_games WHERE id=:id";
+			$result=$conn->prepare($qry);
+			$result->bindParam(':id', $_COOKIE['evento']);
+			$result->execute();
+			$PTable=$result->fetchAll();
+
+			$qry="SELECT max FROM games WHERE id=:id";
+			$result=$conn->prepare($qry);
+			$result->bindParam(':id', $_COOKIE['evento']);
+			$result->execute();
+			$max=$result->fetchColumn();
+
+			$qry="SELECT type FROM games WHERE id=:id";
+			$result=$conn->prepare($qry);
+			$result->bindParam(':id', $_COOKIE['evento']);
+			$result->execute();
+			$ntype=$result->fetchColumn();
+
+			if ($ntype!=$PTable[0][1]) {
+				$qry="UPDATE points_games SET `type_game`=:type WHERE `id`=:id";
+				$result=$conn->prepare($qry);
+				$result->bindParam(':id', $_COOKIE['evento']);
+				$result->bindParam(':type', $ntype);
+				$result->execute();
+			}
+		}
 	}
 ?>
