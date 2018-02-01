@@ -376,14 +376,15 @@
 			} elseif (($max+1)==$pos) {
 				echo "shiut";
 			} elseif (($max+1)<$pos) {
-				$qry="DELETE FROM points_games WHERE position>:max";
+				$qry="DELETE FROM points_games WHERE position>:max AND `id`=:id";
 				$result=$conn->prepare($qry);
 				$nmax=$max;
 				$result->bindParam(':max', $nmax);
+				$result->bindParam(':id', $_COOKIE['evento']);
 				$result->execute();
 				echo "shist";
 			}
-			
+
 			$qry="SELECT * FROM points_games WHERE id=:id";
 			$result=$conn->prepare($qry);
 			$result->bindParam(':id', $_COOKIE['evento']);
@@ -402,13 +403,11 @@
 			$result->execute();
 			$ntype=$result->fetchColumn();
 
-			if ($ntype!=$PTable[0][1]) {
-				$qry="UPDATE points_games SET `type_game`=:type WHERE `id`=:id";
-				$result=$conn->prepare($qry);
-				$result->bindParam(':id', $_COOKIE['evento']);
-				$result->bindParam(':type', $ntype);
-				$result->execute();
-			}
+			$qry="UPDATE points_games SET `type_game`=:type WHERE `id`=:id";
+			$result=$conn->prepare($qry);
+			$result->bindParam(':id', $_COOKIE['evento']);
+			$result->bindParam(':type', $ntype);
+			$result->execute();
 		}
 	}
 ?>
