@@ -65,7 +65,12 @@
 				case 'PointsXGameSave':
 					PointsXGameSave();
 				break;
-				
+				case 'edit_positions_users':
+					edit_positions_users();
+				break;
+				case 'edit_positions_teams':
+					edit_positions_teams();
+				break;
 				default:
 					
 				break;

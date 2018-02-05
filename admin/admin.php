@@ -14,7 +14,7 @@
             <div class="row">
                 <div class="col-sm-2 col-xs-12"></div>
                 <div class="col-sm-8 col-xs-12">
-                    
+                    <meta http-equiv="refresh" content="0; url=http://localhost/intranet/" />
                 </div>
             </div>
         </div>
