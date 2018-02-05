@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50505
 File Encoding         : 65001
 
-Date: 2018-02-03 11:13:05
+Date: 2018-02-05 14:10:07
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -59,7 +59,7 @@ CREATE TABLE `games` (
 -- ----------------------------
 -- Records of games
 -- ----------------------------
-INSERT INTO `games` VALUES ('1', 'UNREAL TOURNEMENT', 'asdd', 'ardilla.jpg', '1', '1', '10', '1', '0000-00-00 00:00:00', '0000-00-00 00:00:00', '2018-01-29 23:45:37');
+INSERT INTO `games` VALUES ('1', 'UNREAL TOURNEMENT', 'asdd', 'ardilla.jpg', '1', '4', '10', '1', '0000-00-00 00:00:00', '0000-00-00 00:00:00', '2018-01-29 23:45:37');
 INSERT INTO `games` VALUES ('2', 'asd', 'asd', 'asd', '1', '1', '100', '0', '0000-00-00 00:00:00', '0000-00-00 00:00:00', '2018-02-01 13:57:25');
 
 -- ----------------------------
@@ -80,13 +80,15 @@ CREATE TABLE `participants` (
   CONSTRAINT `participants_ibfk_1` FOREIGN KEY (`user`) REFERENCES `users` (`id`),
   CONSTRAINT `participants_ibfk_2` FOREIGN KEY (`team`) REFERENCES `teams_participants` (`id`),
   CONSTRAINT `participants_ibfk_3` FOREIGN KEY (`game`) REFERENCES `games` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of participants
 -- ----------------------------
-INSERT INTO `participants` VALUES ('1', '1', '2', '1', '1', '2018-02-01 12:13:26');
-INSERT INTO `participants` VALUES ('2', '2', '1', '1', '2', '2018-01-29 23:51:42');
+INSERT INTO `participants` VALUES ('1', '1', '1', '1', '2', '2018-02-05 13:54:17');
+INSERT INTO `participants` VALUES ('8', '2', '1', '1', '2', '2018-02-05 13:54:17');
+INSERT INTO `participants` VALUES ('9', '1', null, '2', null, '2018-02-04 20:25:47');
+INSERT INTO `participants` VALUES ('10', '2', null, '2', null, '2018-02-04 20:25:46');
 
 -- ----------------------------
 -- Table structure for points_games
@@ -226,7 +228,7 @@ CREATE TABLE `points_users` (
   PRIMARY KEY (`id`),
   KEY `user` (`user`),
   CONSTRAINT `points_users_ibfk_1` FOREIGN KEY (`user`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of points_users
