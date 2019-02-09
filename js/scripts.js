@@ -68,11 +68,55 @@ $(function(){
 		}
 	});
 
+	$(".source").click(function(e) {
+		e.preventDefault();
+		window.location.href=raiz+"source.php?user_id="+$(this).attr('user');
+	})
+	$(".tsource").click(function(e) {
+		e.preventDefault();
+		window.location.href=raiz+"source.php?team="+$(this).attr('team');
+	})
+
+
 	$("#register_game").click(function(e){
 		e.preventDefault();
 		$.ajax({
 			type: "POST",
 			url: raiz+"api/Users.php?f=register_game",
+			data: "id_user="+$(this).attr('user')+"&id_game="+$(this).attr('game'),
+			success: function(data){
+				if(data!=0){
+					$(".alert").addClass("alert-danger");
+					if(data==-1){
+						$(".alert").text("TORTUGAAAA!! Ya se han acabado las plazas.");
+					}
+					else if(data==-2){
+						$(".alert").text("TORTUGAAAA!! Ya se agotó el tiempo para apuntarse a este torneo.");
+					}
+					else{
+						$(".alert").text("Vaya... nuestro programador la ha vuelto a liar. Búscalo y échale la bronca.");
+					}
+
+					$(".alert").fadeIn();
+					$(".alert").delay(5000).fadeOut();
+				}
+				else{
+					window.location.href=raiz;
+				}
+			},
+			error: function(error){
+				$(".alert").addClass("alert-danger").text("Vaya... nuestro programador la ha vuelto a liar. Búscalo y échale la bronca.");
+				$(".alert").fadeIn();
+				setTimeout($(".alert").fadeOut(), 5000);
+			}
+		});
+	});
+
+	$("#register_reto").click(function(e){
+		e.preventDefault();
+		$.ajax({
+			type: "POST",
+			url: raiz+"api/Users.php?f=register_reto",
 			data: "id_user="+$(this).attr('user')+"&id_game="+$(this).attr('game'),
 			success: function(data){
 				if(data!=0){

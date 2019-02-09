@@ -49,7 +49,7 @@
 			</head>
 			<body>
 				<p>Hola '.$nick.',</p>
-				<p>Si has llegado hasta aquí es que estoy haciendo las cosas bien (OLEEÉ). Pulsa en este enlace para establecer tu contraseña y así disfrutar de est evento.</p>
+				<p>Si has llegado hasta aquí es que estoy haciendo las cosas bien (OLEEÉ). Pulsa en este enlace para establecer tu contraseña y así disfrutar de este evento.</p>
 				<p><a href="http://localhost/intranet/pass.php?wawawa='.$crypted.'" target="_blank">NO PULSAR</a></p>
 				<p>Muchas gracias '.$nick.'!!</p>
 			</body>
@@ -57,7 +57,7 @@
 			';
 			$headers = "MIME-Version: 1.0\r\n"; 
 			$headers .= "Content-type: text/html; charset=utf-8\r\n";
-			$headers .= "From: Freaksparty < info@freaksparty.com >\r\n";
+			$headers .= "From: FicOnLan < no-responder@ficonlan.es>\r\n";
 
 			echo mail($email, $title, $mensaje, $headers);
 		}
@@ -111,6 +111,43 @@
 				$now=strtotime(date("Y-m-d H:i:s"));
 				if($date_end>$now){
 					$qry="INSERT INTO participants(game, user) VALUES (:game, :user)";
+					$result=$conn->prepare($qry);
+					$result->bindParam(':game', $game);
+					$result->bindParam(':user', $user);
+					$result->execute();
+
+					echo 0;
+				}
+				else{
+					echo -2;
+				}
+			}
+			else{
+				echo -1;
+			}
+		}
+
+		function register_reto($user, $game){
+			global $conn;
+			$qry="SELECT COUNT(*) as num FROM participants_retos WHERE reto = :game GROUP BY reto";
+			$result=$conn->prepare($qry);
+			$result->bindParam(':game', $game);
+			$result->execute();
+
+			$inscribed=$result->fetch()['num'];
+			if($inscribed==null) $inscribed=0;
+			$qry="SELECT max_participants, deadline FROM retos WHERE idx = :game";
+			$result=$conn->prepare($qry);
+			$result->bindParam(':game', $game);
+			$result->execute();
+			
+			$game_info=$result->fetch();
+			$max=$game_info['max_participants'];
+			$date_end=strtotime($game_info['deadline']);
+			if($inscribed<$max){
+				$now=strtotime(date("Y-m-d H:i:s"));
+				if($date_end>$now){
+					$qry="INSERT INTO participants_retos(reto, user) VALUES (:game, :user)";
 					$result=$conn->prepare($qry);
 					$result->bindParam(':game', $game);
 					$result->bindParam(':user', $user);
@@ -182,6 +219,7 @@
 		case "setpass": $user->setpass($_POST['pass'], $_POST['cryp']);break;
 		case "login": $user->login($_POST['nick'], $_POST['pass']);break;
 		case "register_game": $user->register_game($_POST['id_user'], $_POST['id_game']);break;
+		case "register_reto": $user->register_reto($_POST['id_user'], $_POST['id_game']);break;
 		case "register_game_team": 
 			$users=array();
 			$users[]=$_POST["user_id"];

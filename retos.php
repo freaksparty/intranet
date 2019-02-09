@@ -86,6 +86,33 @@
                     </div>
                 </div>
             </div>
+             <div class="row">
+                <div class="col-sm-2 col-xs-12"></div>
+                <div class="col-sm-8 col-xs-12">
+                    <h2 class='title'>TODOS LOS RETOS</h2>
+                    <div class="row">
+                        <?php
+                            $qry="SELECT *
+                                    FROM retos
+                                    ORDER BY deadline ASC";
+                            $result=$conn->prepare($qry);
+                            $result->execute();
+
+                            $games= $result->fetchAll();
+                            
+                            foreach($games as $game){
+                        ?>
+                            <div class="col-md-4 col-sm-6 col-xs-12 reto text-center" reto="<?=$game['idx']?>">
+                                <img src="images/<?=$game['img']?>"/>
+                                <h3><?=$game['name']?></h3>
+                                <small>Hora <?=date("H:i",strtotime($game['deadline']));?></small>
+                            </div>
+                        <?php
+                            }
+                        ?>
+                    </div>
+                </div>
+            </div>
         </div>
     </body>
     <?php

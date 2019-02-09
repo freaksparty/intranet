@@ -92,8 +92,8 @@
 				<div class="col-sm-1 col-xs-12"></div>
 				<div class="col-sm-10 col-xs-12">
 					<div class="apuntar">
-						<button user="3" game="2" class="pull-right btn btn-fol" id="change_view">CAMBIAR VISTA</button>
-						<a href="source.php"><button user="3" game="2" class="pull-right btn btn-fol" id="change_view">FUENTE DE PUNTOS</button></a>
+						<button user="3" game="2" class="pull-right btn btn-fol" id="change_view">Equipos</button>
+						<a href="source.php"><button user="3" game="2" class="pull-right btn btn-fol" id="change_view">Mis puntos</button></a>
 					</div>
 					<h2 class='title'>CLASIFICACIÓN</h2>
 					<table id="table-users" class="table table-hover table-striped table-responsive">
@@ -126,7 +126,7 @@
 										$user['nick']="<strong>".$user['nick']."</strong>";
 									}
 							?>
-							<tr user="<?=$user['id']?>">
+							<tr class="source" user="<?=$user['id']?>">
 								<td><?=$i?></td>
 								<td><?=$user['nick']?></td>
 								<td><?=$user['teamname']?></td>
@@ -157,7 +157,7 @@
 								$i=1;
 								foreach($pointsTeam as $team){
 							?>
-							<tr>
+							<tr class="tsource" team="<?=$team['name']?>">
 								<td><?=$i?></td>
 								<td><?=$team['name']?></td>
 								<td><?=$team['games']?></td>

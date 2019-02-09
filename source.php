@@ -17,7 +17,13 @@
                 <div class="col-sm-2 col-xs-12"></div>
                 <div class="col-sm-8 col-xs-12">
                     <?php
-						points_source2($_COOKIE['user_id']);
+                        if(isset($_GET['user_id'])) {
+                            points_source2($_GET['user_id']);
+                        } else if (isset($_GET['team'])){
+                            team_points_sources($_GET['team']);
+                        } else {
+                            points_source2($_COOKIE['user_id']);
+                        }
                     ?>
                 </div>
             </div>

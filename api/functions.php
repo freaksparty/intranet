@@ -158,10 +158,10 @@
 									</th>
 								</tr>
 							</thead>
+							<tbody>
 						";
 					while ($res=$result->fetch()) {
 						echo "
-							<tbody>
 							<tr>
 								<th scope='row'>
 									".get_user_nick($user)."
@@ -193,13 +193,90 @@
 								".$res['description']."
 							</td>
 							<td>
-								 
+								 TONGO
 							</td>
 							<td>
 								".$res["points"]."
 							</td>
 						</tr>
-						</tbody></table>";
+						";
 					}
+					echo "</tbody></table>";
+		}
+		function team_points_sources($team) {
+			GLOBAL $conn;
+			$qry="SELECT u.id FROM users u, (SELECT tu.id FROM teams_users tu WHERE tu.name=:team) t WHERE t.id=u.team;";
+			$tusers=$conn->prepare($qry);
+			$tusers->bindParam(':team', $team);
+			$tusers->execute();
+
+			echo "
+				<table class='table table-striped'>
+					<thead>
+						<tr>
+							<th>
+								Usuario
+							</th>
+							<th>
+								Juego o Motivo
+							</th>
+							<th>
+								Posición
+							</th>
+							<th>
+								Cantidad
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+				";
+			while($user=$tusers->fetch()['id']) {
+				GLOBAL $conn;
+				$qry="SELECT pg.points, p.game, p.position FROM participants as p, points_games as pg WHERE ((p.position=pg.position AND pg.points>0) AND p.user=:id) AND p.game=pg.id ";
+				$result=$conn->prepare($qry);
+				$result->bindParam(':id', $user);
+				$result->execute();
+				while ($res=$result->fetch()) {
+					echo "
+						<tr>
+							<th scope='row'>
+								".get_user_nick($user)."
+							</th>
+							<td>
+								<b>".get_game_name2($res['game'])."</b>
+							</td>
+							<td>
+								<b>".$res['position']."</b>
+							</td>
+							<td>
+								".$res["points"]."
+							</td>
+						</tr>
+					";
+				}
+				GLOBAL $conn;
+					$qry="SELECT * FROM points_users WHERE user=:id";
+					$result=$conn->prepare($qry);
+					$result->bindParam(':id', $user);
+					$result->execute();
+					
+					while ($res=$result->fetch()) {
+						echo "<tr>
+							<th scope='row'>
+								".get_user_nick($user)."
+							</th>
+							<td>
+								".$res['description']."
+							</td>
+							<td>
+								 TONGO
+							</td>
+							<td>
+								".$res["points"]."
+							</td>
+						</tr>
+						";
+					}
+			}
 		}
 ?>
