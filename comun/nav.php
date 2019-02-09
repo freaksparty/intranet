@@ -10,7 +10,7 @@
         <a class="nav-link" href="./ficopuntos.php">Ficopuntos</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Horario</a>
+        <a class="nav-link" href="./horario.php">Horario</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" target="_blank" href="http://foro.ficonlan.es">Foro</a>

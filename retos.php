@@ -20,16 +20,12 @@
             <div class="row">
                 <div class="col-sm-2 col-xs-12"></div>
                 <div class="col-sm-8 col-xs-12">
-                    <h2 class='title'>TUS ACTIVIDADES</h2>
+                    <h2 class='title'>TUS RETOS</h2>
                     <div class="row">
                         <?php
                             include "api/config.php";
                             global $conn;
-                            $qry="SELECT g.* 
-                                    FROM games as g 
-                                    JOIN participants as p ON g.id=p.game 
-                                    WHERE user=:user AND type=1
-                                    ORDER BY date_event ASC";
+                            $qry="SELECT r.* FROM retos r, (SELECT distinct reto FROM participants_retos WHERE user=:user) p where r.idx=p.reto";
                             $result=$conn->prepare($qry);
                             $result->bindParam(':user', $_COOKIE['user_id']);
                             $result->execute();
@@ -51,10 +47,10 @@
                             
                             foreach($mygames as $game){
                         ?>
-                            <div class="col-md-4 col-sm-6 col-xs-12 actividad text-center" actividad="<?=$game['id']?>">
-                                <img src="images/<?=$game['image']?>"/>
+                            <div class="col-md-4 col-sm-6 col-xs-12 reto text-center" reto="<?=$game['idx']?>">
+                                <img src="images/<?=$game['img']?>"/>
                                 <h3><?=utf8_encode($game['name'])?></h3>
-                                <small><?=day_of_week(date('w', strtotime($game['date_event'])));?> a las <?=date('H:i', strtotime($game['date_event']));?></small>
+                                <small><?=day_of_week(date('w', strtotime($game['deadline'])));?> a las <?=date('H:i', strtotime($game['deadline']));?></small>
                             </div>
                         <?php
                             }
@@ -65,13 +61,13 @@
             <div class="row">
                 <div class="col-sm-2 col-xs-12"></div>
                 <div class="col-sm-8 col-xs-12">
-                    <h2 class='title'>ACTIVIDADES DE HOY</h2>
+                    <h2 class='title'>RETOS QUE TERMINAN HOY</h2>
                     <div class="row">
                         <?php
                             $qry="SELECT *
-                                    FROM games
-                                    WHERE DAY(date_event)=DAY(NOW()) AND type=1
-                                    ORDER BY date_event ASC";
+                                    FROM retos
+                                    WHERE DAY(deadline)=DAY(NOW())
+                                    ORDER BY deadline ASC";
                             $result=$conn->prepare($qry);
                             $result->execute();
 
@@ -79,10 +75,10 @@
                             
                             foreach($games as $game){
                         ?>
-                            <div class="col-md-4 col-sm-6 col-xs-12 actividad text-center" actividad="<?=$game['id']?>">
-                                <img src="images/<?=$game['image']?>"/>
+                            <div class="col-md-4 col-sm-6 col-xs-12 reto text-center" reto="<?=$game['idx']?>">
+                                <img src="images/<?=$game['img']?>"/>
                                 <h3><?=$game['name']?></h3>
-                                <small>Hora <?=date("H:i",strtotime($game['date_event']));?></small>
+                                <small>Hora <?=date("H:i",strtotime($game['deadline']));?></small>
                             </div>
                         <?php
                             }

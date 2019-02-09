@@ -1,4 +1,5 @@
-var raiz="http://localhost/intranet/";
+//var raiz="http://localhost/intranet/";
+var raiz="";
 
 $(function(){
 	$(".actividad").click(function(e){
@@ -7,7 +8,12 @@ $(function(){
 		
 		window.location.href=raiz+"ver_actividad.php?id="+actividad;
 	});
-
+	$(".reto").click(function(e){
+		var reto = $(this).attr("reto");
+		e.preventDefault();
+		
+		window.location.href=raiz+"ver_reto.php?id="+reto;
+	});
 	$("form#login button#next_login").click(function(e){
 		e.preventDefault();
 
@@ -28,7 +34,7 @@ $(function(){
 						$(".modal").modal();
 						$("#continue-login").click(function(e){
 							e.preventDefault();
-
+							$("#continue-login").attr("disabled", true);
 							$.ajax({
 								type: "POST",
 								url: raiz+"api/Users.php?f=send_email",
@@ -64,13 +70,11 @@ $(function(){
 
 	$("#register_game").click(function(e){
 		e.preventDefault();
-
 		$.ajax({
 			type: "POST",
 			url: raiz+"api/Users.php?f=register_game",
 			data: "id_user="+$(this).attr('user')+"&id_game="+$(this).attr('game'),
 			success: function(data){
-				console.log(data);
 				if(data!=0){
 					$(".alert").addClass("alert-danger");
 					if(data==-1){
@@ -97,6 +101,48 @@ $(function(){
 			}
 		});
 	});
+
+	$("#register_game_team").click(function(e){
+		e.preventDefault();
+		
+		$(".modal").modal();
+	});
+
+	$("#register_game_by_team").click(function(e){
+		e.preventDefault();
+		
+		$.ajax({
+			type: "POST",
+			url: raiz+"api/Users.php?f=register_game_team",
+			data: $("#team_games_parts").serialize(),
+			success: function(data){
+				console.log(data);
+				if(data!=0){
+					$(".alert").addClass("alert-danger");
+					if(data==-1){
+						$(".alert").text("TORTUGAAAA!! Ya se han acabado las plazas.");
+					}
+					else if(data==-2){
+						$(".alert").text("TORTUGAAAA!! Ya se agotó el tiempo para apuntarse a este torneo.");
+					}
+					else{
+						$(".alert").text("Vaya... nuestro programador la ha vuelto a liar. Búscalo y échale la bronca.");
+					}
+					
+					$(".alert").fadeIn();
+					$(".alert").delay(5000).fadeOut();
+				}
+				else{
+					window.location.href=raiz;
+				}
+			},
+			error: function(error){
+				$(".alert").addClass("alert-danger").text("Vaya... nuestro programador la ha vuelto a liar. Búscalo y échale la bronca.");
+				$(".alert").fadeIn();
+				setTimeout($(".alert").fadeOut(), 5000);
+			}
+		});
+	});
 	
 	$("#admin_op").click(function(e){
 		e.preventDefault();
@@ -105,5 +151,18 @@ $(function(){
 			type: "POST",
 			url: raiz+"admin.php?f=ver_juego",
 		});
+	});
+
+	$("#change_view").click(function(e){
+		e.preventDefault();
+
+		if($("#table-users").is(":visible")){
+			$("#table-users").hide();
+			$("#table-teams").show();
+		}
+		else{
+			$("#table-teams").hide();
+			$("#table-users").show();
+		}
 	});
 });

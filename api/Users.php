@@ -84,37 +84,82 @@
 
 			$user=$result->fetch();
 
-			$_SESSION['user_id']=$user['id'];
-			$_SESSION['user_nick']=$nick;
+			setcookie('user_id', $user['id'], time()+(3600*24*4), "/");
+			setcookie('user_nick', $nick, time()+(3600*24*4), "/");
 
-			header("Location: http://localhost/intranet");
+			header("Location: http://localhost/intranet/");
 		}
 
 		function register_game($user, $game){
 			global $conn;
-			$qry="SELECT COUNT(*) as num FROM game_users WHERE id_game = :game GROUP BY id_game";
+			$qry="SELECT COUNT(*) as num FROM participants WHERE game = :game GROUP BY game";
 			$result=$conn->prepare($qry);
 			$result->bindParam(':game', $game);
 			$result->execute();
 
 			$inscribed=$result->fetch()['num'];
 			if($inscribed==null) $inscribed=0;
-			$qry="SELECT max, date_end_reg FROM games WHERE id = :game";
+			$qry="SELECT max, date_max FROM games WHERE id = :game";
 			$result=$conn->prepare($qry);
 			$result->bindParam(':game', $game);
 			$result->execute();
-
+			
 			$game_info=$result->fetch();
 			$max=$game_info['max'];
-			$date_end=strtotime($game_info['date_end_reg']);
+			$date_end=strtotime($game_info['date_max']);
 			if($inscribed<$max){
 				$now=strtotime(date("Y-m-d H:i:s"));
 				if($date_end>$now){
-					$qry="INSERT INTO game_users(id_game,id_user) VALUES (:game, :user)";
+					$qry="INSERT INTO participants(game, user) VALUES (:game, :user)";
 					$result=$conn->prepare($qry);
 					$result->bindParam(':game', $game);
 					$result->bindParam(':user', $user);
 					$result->execute();
+
+					echo 0;
+				}
+				else{
+					echo -2;
+				}
+			}
+			else{
+				echo -1;
+			}
+		}
+
+		function register_game_team($game, $users, $team){
+			global $conn;
+			$qry="SELECT COUNT(*) as num FROM participants WHERE game = :game GROUP BY game";
+			$result=$conn->prepare($qry);
+			$result->bindParam(':game', $game);
+			$result->execute();
+
+			$inscribed=$result->fetch()['num'];
+			if($inscribed==null) $inscribed=0;
+			$qry="SELECT max, date_max, min FROM games WHERE id = :game";
+			$result=$conn->prepare($qry);
+			$result->bindParam(':game', $game);
+			$result->execute();
+			
+			$game_info=$result->fetch();
+			$max=$game_info['max']*$game_info['min'];
+			$date_end=strtotime($game_info['date_max']);
+			if($inscribed<$max){
+				$now=strtotime(date("Y-m-d H:i:s"));
+				if($date_end>$now){
+					$qry="INSERT INTO teams_participants(name) VALUES (:team)";
+						$result=$conn->prepare($qry);
+						$result->bindParam(':team', $team);
+						$result->execute();
+						$team_id=$conn->lastInsertId();
+					foreach($users as $user){	
+						$qry="INSERT INTO participants(game, user, team) VALUES (:game, :user, :team)";
+						$result=$conn->prepare($qry);
+						$result->bindParam(':game', $game);
+						$result->bindParam(':user', $user);
+						$result->bindParam(':team', $team_id);
+						$result->execute();
+					}
 
 					echo 0;
 				}
@@ -137,6 +182,17 @@
 		case "setpass": $user->setpass($_POST['pass'], $_POST['cryp']);break;
 		case "login": $user->login($_POST['nick'], $_POST['pass']);break;
 		case "register_game": $user->register_game($_POST['id_user'], $_POST['id_game']);break;
+		case "register_game_team": 
+			$users=array();
+			$users[]=$_POST["user_id"];
+			$i=1;
+			while(isset($_POST["part_".$i])){	
+				$users[]=$_POST["part_".$i];
+				$i++;
+			}
+			
+			$user->register_game_team($_POST['game_id'], $users, $_POST["name_team"]);
+		break;
 		default: break;
 	}
 ?>

@@ -41,7 +41,7 @@
 				$result=$conn->prepare($qry);
 				$result->execute();
 
-				$select="<select form='edit' name='a4'>";
+				$select="<select form='edit' class='form-control' name='a4'>";
 				while ($types = $result->fetch()) {
 					if (isset($id)) {
 						if (gettypes($id)==$types[0]) {
@@ -65,7 +65,7 @@
 				$result=$conn->prepare($qry);
 				$result->execute();
 
-				$select="<select form='edit' name='a5'>";
+				$select="<select form='edit' class='form-control' name='a5'>";
 				while ($classes = $result->fetch()) {
 					if (isset($id)) {
 						if (getclasses($id)==$classes[0]) {
@@ -91,74 +91,136 @@
 		///////////// GENERAL /////////////
 		///////////////////////////////////
 
-		function listgames() {
-			if (!no_permission(2)) {
-				GLOBAL $conn;
-				$qry="SELECT * FROM games";
-				$result=$conn->prepare($qry);
-				$result->execute();
-				echo 
-					"<table border='1'>
-						<tr>
-							<td>ID</td>
-							<td>Título</td>
-							<td>Descripción</td>
-							<td>Imagen</td>
-							<td>Tipo</td>
-							<td>Clase</td>
-							<td>Equipo máximo</td>
-							<td>Equipo mínimo</td>
-							<td>Fecha</td>
-							<td>Fin registro</td>
-							<td>Seleccionar</td>
-						</tr>
-						<form method='post' action='http://localhost/intranet/admin.php?f=gamemngm'>";
-				while ($eventos = $result->fetch()) {
+			function listgames() {
+				if (!no_permission(2)) {
+					GLOBAL $conn;
+					$qry="SELECT * FROM games";
+					$result=$conn->prepare($qry);
+					$result->execute();
+
 					echo "
-					<tr>
-						<td>".$eventos[0]."</td>
-						<td>".utf8_encode($eventos[1])."</td>
-						<td>".utf8_encode($eventos[2])."</td>
-						<td>".$eventos[3]."</td>
-						<td>".utf8_encode(gettypes($eventos[4]))."</td>
-						<td>".utf8_encode(getclasses($eventos[5]))."</td>
-						<td>".$eventos[6]."</td>
-						<td>".$eventos[7]."</td>
-						<td>".$eventos[8]."</td>
-						<td>".$eventos[9]."</td>
-						<td><input type='radio' name='evento' value='".$eventos[0]."'</td>
-					</tr>";
+					<table class='table table-striped'>
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Título</th>
+								<th>Descripción</th>
+								<th>Imagen</th>
+								<th>Tipo</th>
+								<th>Clase</th>
+								<th>Equipo máximo</th>
+								<th>Equipo mínimo</th>
+								<th>Fecha</th>
+								<th>Fin registro</th>
+								<th>Seleccionar</th>
+							</tr>
+						</thead>
+						<tbody>
+							<form method='post' action='http://localhost/intranet/admin.php?f=gamemngm'>";
+					while ($eventos = $result->fetch()) {
+						echo "
+						<tr>
+							<th scope='row'>".$eventos[0]."</t>
+							<td>".utf8_encode($eventos[1])."</td>
+							<td>".utf8_encode($eventos[2])."</td>
+							<td>".$eventos[3]."</td>
+							<td>".utf8_encode(gettypes($eventos[4]))."</td>
+							<td>".utf8_encode(getclasses($eventos[5]))."</td>
+							<td>".$eventos[6]."</td>
+							<td>".$eventos[7]."</td>
+							<td>".$eventos[8]."</td>
+							<td>".$eventos[9]."</td>
+							<td><input type='radio' name='evento' value='".$eventos[0]."'</td>
+						</tr>";
+					}
+					echo "</tbody></table>
+						<br>
+						<button type='submit' formmethod='post' class='btn btn-primary' name='listgame' value='points'>Modificar Puntos</button>
+						<button type='submit' formmethod='post' class='btn btn-primary' name='listgame' value='positions'>Tabla de posiciones</button>
+						<button type='submit' formmethod='post' class='btn btn-primary' name='listgame' value='edit'>Modificar</button>
+						<button type='submit' formmethod='post' class='btn btn-primary' name='listgame' value='del'>Eliminar</button>'";
 				}
-				echo "</table>
-					<br>
-					<button type='submit' formmethod='post' class='btn btn-primary' name='listgame' value='points'>Modificar Puntos</button>
-					<button type='submit' formmethod='post' class='btn btn-primary' name='listgame' value='positions'>Tabla de posiciones</button>
-					<button type='submit' formmethod='post' class='btn btn-primary' name='listgame' value='edit'>Modificar</button>
-					<button type='submit' formmethod='post' class='btn btn-primary' name='listgame' value='del'>Eliminar</button>'";
 			}
-		}
-		function gamemngm() {
-			if (!no_permission(2)) {
-				if ($_POST['listgame']==='del') {
-					setcookie("evento", $_POST['evento']);
-					confirmdel();
-				} elseif ($_POST['listgame']==='edit') {
-					setcookie("evento", $_POST['evento']);
-					editgame();
-				} elseif ($_POST['listgame']==='points') {
-					setcookie("evento", $_POST['evento']);
-					$_COOKIE['evento']=$_POST['evento'];
-					PointsXGame();
-				} elseif ($_POST['listgame']==='positions') {
-					$game=$_POST['evento'];
-					user_position_table($game);
+			function gamemngm() {
+				if (!no_permission(2)) {
+					if ($_POST['listgame']==='del') {
+						setcookie("evento", $_POST['evento']);
+						confirmdel();
+					} elseif ($_POST['listgame']==='edit') {
+						setcookie("evento", $_POST['evento']);
+						editgame();
+					} elseif ($_POST['listgame']==='points') {
+						setcookie("evento", $_POST['evento']);
+						$_COOKIE['evento']=$_POST['evento'];
+						PointsXGame();
+					} elseif ($_POST['listgame']==='positions') {
+						$game=$_POST['evento'];
+						user_position_table($game);
+					}
 				}
 			}
-		}
 
 	///////////////////////////////////////////////
 	//////////// MANAGE GAME FUNCTIONS ////////////
 	///////////////////////////////////////////////
+
+		///////////////////////////////////////
+		///////////// DELETE GAME /////////////
+		///////////////////////////////////////			
+			function upload_image_game() {
+				if (!no_permission(2)) {
+				
+					$target_dir = "uploads/";
+					$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+					$uploadOk = 1;
+					$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+					// Check if image file is a actual image or fake image
+					if(isset($_POST["submit"])) {
+						$check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+						if($check !== false) {
+							echo "File is an image - " . $check["mime"] . ".";
+							$uploadOk = 1;
+						} else {
+							echo "File is not an image.";
+							$uploadOk = 0;
+						}
+					}
+					// Check if file already exists
+					if (file_exists($target_file)) {
+						echo "Sorry, file already exists.";
+						$uploadOk = 0;
+					}
+					// Check file size
+					if ($_FILES["fileToUpload"]["size"] > 500000) {
+						echo "Sorry, your file is too large.";
+						$uploadOk = 0;
+					}
+					// Allow certain file formats
+					if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+					&& $imageFileType != "gif" ) {
+						echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+						$uploadOk = 0;
+					}
+					// Check if $uploadOk is set to 0 by an error
+					if ($uploadOk == 0) {
+						echo "Sorry, your file was not uploaded.";
+					// if everything is ok, try to upload file
+					} else {
+						if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+							echo "The file ". basename( $_FILES["fileToUpload"]["name"]). " has been uploaded.";
+						} else {
+							echo "Sorry, there was an error uploading your file.";
+						}
+					}
+				}
+			}
+			function upload_image() {
+				echo "
+					<form action='admin.php?f=upload_image_game' method='post'>
+					<input class='form-control-file' type='file'>
+					<button type='submit' formmethod='post' class='btn btn-primary' name='confirm'>Subir</button>
+				";
+			}
 
 		///////////////////////////////////////
 		///////////// DELETE GAME /////////////
@@ -195,35 +257,72 @@
 					$result->bindParam(':id', $_POST['evento']);
 					$result->execute();
 					$id=$result->fetch();
-					echo 
-						"<table border='1'>
-							<tr>
-								<td>ID</td>
-								<td>Título</td>
-								<td>Descripción</td>
-								<td>Imagen</td>
-								<td>Tipo</td>
-								<td>Clase</td>
-								<td>Equipo máximo</td>
-								<td>Equipo mínimo</td>
-								<td>Fecha</td>
-								<td>Fin registro</td>
-							</tr>";
-					echo "<form method='post' id='edit' action='http://localhost/intranet/admin.php?f=savegame'><tr><td><input type='text' name='id' readonly='readonly' value='".($id[0]);
-					echo "'></td>
-					<script>alert('Es muy importante que no la pifies en el formato de las fechas! (AAAA-MM-DD HH:MM:SS)')</script>
-					<td><input type='text' name='a1' value='".utf8_encode($id[1])."'></td>
-					<td><input type='text' name='a2' value='".utf8_encode($id[2])."'></td>
-					<td><input type='text' name='a3' value='".$id[3]."'></td>
-					<td>".selecttype($id[4])."</td>
-					<td>".selectclass($id[5])."</td>
-					<td><input type='text' name='a6' value='".$id[6]."'></td>
-					<td><input type='text' name='a7' value='".$id[7]."'></td>
-					<td><input type='text' name='a8' placeholder='AAAA-MM-DD HH:MM:SS' value='".$id[8]."'></td>
-					<td><input type='text' name='a9' placeholder='AAAA-MM-DD HH:MM:SS' value='".$id[9]."'></td>
-					</table>
-					<br>
-					<button type='submit' formmethod='post' class='btn btn-primary'>Guardar</button>";
+
+					echo "
+					<form method='post' id='edit' action='http://localhost/intranet/admin.php?f=savegame'>
+					<div class='form-group row'>
+						<label for='example-text-input' class='col-2 col-form-label'>#</label>
+						<div class='col-10'>
+							<input class='form-control' type='text' name='id' readonly='readonly' value='".($id[0])."'>
+						</div>
+					</div>
+					<div class='form-group row'>
+						<label for='example-text-input' class='col-2 col-form-label'>Título</label>
+						<div class='col-10'>
+							<input class='form-control' type='text' name='a1' value='".utf8_encode($id[1])."'>
+						</div>
+					</div>
+					<div class='form-group row'>
+						<label for='example-text-input' class='col-2 col-form-label'>Descripción</label>
+						<div class='col-10'>
+							<input class='form-control' type='text' name='a2' value='".utf8_encode($id[2])."'>
+						</div>
+					</div>
+					<div class='form-group row'>
+						<label for='example-text-input' class='col-2 col-form-label'>Imagen</label>
+						<div class='col-10'>
+							<input class='form-control' type='text' name='a3' value='".$id[3]."'>
+						</div>
+					</div>
+					<div class='form-group row'> 
+						<label for='example-text-input' class='col-2 col-form-label'>Tipo</label>
+						<div class='col-10'>
+							".selecttype($id[4])."
+						</div>
+					</div>
+					<div class='form-group row'> 
+						<label for='example-text-input' class='col-2 col-form-label'>Clase</label>
+						<div class='col-10'>
+							".selectclass($id[5])."
+						</div>
+					</div>
+					<div class='form-group row'>
+						<label for='example-text-input' class='col-2 col-form-label'>Equipo Máximo</label>
+						<div class='col-10'>
+							<input class='form-control' type='text' name='a6' value='".$id[6]."'>
+						</div>
+					</div>
+					<div class='form-group row'>
+						<label for='example-text-input' class='col-2 col-form-label'>Equipo Mínimo</label>
+						<div class='col-10'>
+							<input class='form-control' type='text' name='a7' value='".$id[7]."'>
+						</div>
+					</div>
+					<div class='form-group row'>
+						<label for='example-text-input' class='col-2 col-form-label'>Fecha</label>
+						<div class='col-10'>
+							<input class='form-control' type='text' name='a8' placeholder='AAAA-MM-DD HH:MM:SS' value='".$id[8]."'>
+						</div>
+					</div>
+					<div class='form-group row'>
+						<label for='example-text-input' class='col-2 col-form-label'>Fin registro</label>
+						<div class='col-10'>
+							<input class='form-control' type='text' name='a9' placeholder='AAAA-MM-DD HH:MM:SS' value='".$id[9]."'>
+						</div>
+					</div>
+					<button type='submit' formmethod='post' class='btn btn-primary'>Guardar</button>
+					</form>
+					";
 
 				}
 			}
@@ -264,35 +363,72 @@
 					$result=$conn->prepare($qry);
 					$result->execute();
 					$id=$result->fetchColumn();
-					echo 
-						"<table border='1'>
-							<tr>
-								<td>ID</td>
-								<td>Título</td>
-								<td>Descripción</td>
-								<td>Imagen</td>
-								<td>Tipo</td>
-								<td>Clase</td>
-								<td>Equipo máximo</td>
-								<td>Equipo mínimo</td>
-								<td>Fecha</td>
-								<td>Fin registro</td>
-							</tr>";
-					echo "<form method='post' id='edit' action='admin.php?f=newgame'><tr><td><input type='text' name='id' readonly='readonly' value='".($id+1);
-					echo "'></td>
-					<script>alert('Es muy importante que no la pifies en el formato de las fechas! (AAAA-MM-DD HH:MM:SS)')</script>
-					<td><input type='text' name='a1'></td>
-					<td><input type='text' name='a2'></td>
-					<td><input type='text' name='a3'></td>
-					<td>".selecttype(1)."</td>
-					<td>".selectclass(1)."</td>
-					<td><input type='text' name='a6'></td>
-					<td><input type='text' name='a7'></td>
-					<td><input type='text' name='a8' placeholder='AAAA-MM-DD HH:MM:SS'></td>
-					<td><input type='text' name='a9' placeholder='AAAA-MM-DD HH:MM:SS'></td>
-					</table>
-					<br>
-					<button type='submit' formmethod='post' class='btn btn-primary'>Crear</button>";
+					
+					echo "
+					<form method='post' id='edit' action='admin.php?f=newgame'>
+					<div class='form-group row'>
+						<label for='example-text-input' class='col-2 col-form-label'>#</label>
+						<div class='col-10'>
+							<input class='form-control' type='text' name='id' readonly='readonly' value='".($id+1)."'>
+						</div>
+					</div>
+					<div class='form-group row'>
+						<label for='example-text-input' class='col-2 col-form-label'>Título</label>
+						<div class='col-10'>
+							<input class='form-control' type='text' name='a1'>
+						</div>
+					</div>
+					<div class='form-group row'>
+						<label for='example-text-input' class='col-2 col-form-label'>Descripción</label>
+						<div class='col-10'>
+							<input class='form-control' type='text' name='a2'>
+						</div>
+					</div>
+					<div class='form-group row'>
+						<label for='example-text-input' class='col-2 col-form-label'>Imagen</label>
+						<div class='col-10'>
+							<input class='form-control' type='text' name='a3'>
+						</div>
+					</div>
+					<div class='form-group row'> 
+						<label for='example-text-input' class='col-2 col-form-label'>Tipo</label>
+						<div class='col-10'>
+							".selecttype(1)."
+						</div>
+					</div>
+					<div class='form-group row'> 
+						<label for='example-text-input' class='col-2 col-form-label'>Clase</label>
+						<div class='col-10'>
+							".selectclass(1)."
+						</div>
+					</div>
+					<div class='form-group row'>
+						<label for='example-text-input' class='col-2 col-form-label'>Equipo Máximo</label>
+						<div class='col-10'>
+							<input class='form-control' type='text' name='a6'>
+						</div>
+					</div>
+					<div class='form-group row'>
+						<label for='example-text-input' class='col-2 col-form-label'>Equipo Mínimo</label>
+						<div class='col-10'>
+							<input class='form-control' type='text' name='a7'>
+						</div>
+					</div>
+					<div class='form-group row'>
+						<label for='example-text-input' class='col-2 col-form-label'>Fecha</label>
+						<div class='col-10'>
+							<input class='form-control' type='text' name='a8' placeholder='AAAA-MM-DD HH:MM:SS'>
+						</div>
+					</div>
+					<div class='form-group row'>
+						<label for='example-text-input' class='col-2 col-form-label'>Fin registro</label>
+						<div class='col-10'>
+							<input class='form-control' type='text' name='a9' placeholder='AAAA-MM-DD HH:MM:SS'>
+						</div>
+					</div>
+					<button type='submit' formmethod='post' class='btn btn-primary'>Crear</button>
+					</form>
+					";
 				}
 			}
 			function newgame() {
@@ -345,38 +481,40 @@
 					$result->execute();
 					$type=$result->fetchColumn();
 
-					echo "Editar posiciones de: <b>".$EName."</b>";
+					echo "<b><center><font size='10'>".$EName."</font></center></b>";
 					echo "
-						<table>
+						<table class='table table-striped'>
+						<thead>
 							<tr>
-								<td>
-									Posición
-								</td>
-								<td>
-									Tipo
-								</td>
-								<td>
-									Puntos
-								</td>
-							</tr><form method='post' action='./admin.php?f=PointsXGameSave'>
+								<th>
+									<input class='form-control transparent-input strongchar' type='text' readonly='readonly' value='#'>
+								</th>
+								<th>
+									<input class='form-control transparent-input strongchar' type='text' readonly='readonly' value='Tipo'>
+								</th>
+								<th>
+									<input class='form-control transparent-input strongchar' type='text' readonly='readonly' value='Puntos'>
+								</th>
+							</tr>
+						</thead><tbody><form method='post' action='./admin.php?f=PointsXGameSave'>
 					";
 
 					foreach ($PTable as $elem) {
 						echo "
 							<tr>
+								<th scope='row'>
+									<input class='form-control transparent-input' type='text' readonly='readonly' name='a0[]' value='".$elem[2]."'>
+								</th>
 								<td>
-									<input type='text' readonly='readonly' name='a0[]' value='".$elem[2]."'>
+									<input class='form-control transparent-input' type='text' readonly='readonly' value='".gettypes($elem[1])."'>
 								</td>
 								<td>
-									<input type='text' readonly='readonly' value='".gettypes($elem[1])."'>
-								</td>
-								<td>
-									<input type='text' name='a1[]' value='".$elem[3]."'>
+									<input class='form-control transparent-input' type='text' name='a1[]' value='".$elem[3]."'>
 								</td>
 							</tr>       
 						";  
 					}
-					echo "</table><br><button type='submit' formmethod='post' class='btn btn-primary'>Guardar</button></form>";
+					echo "</tbody></table><br><button type='submit' formmethod='post' class='btn btn-primary'>Guardar</button></form>";
 				}
 			}
 			function PointsXGameSave() {
@@ -481,10 +619,10 @@
 						$result=$conn->prepare($qry);
 						$result->bindParam(":id", $event);
 						$result->execute();
-						$type=$result->fetchColumn();
+						$class=$result->fetchColumn();
 
-						$equipos=explode("por equipos", $type);
-						if (is_array($equipos)) {
+						$equipos=explode("por equipos", $class);
+						if ($class>10) {
 							short_by_teams($event);
 						} else {
 							short_by_users($event);
@@ -496,7 +634,7 @@
 			///////////// BY USER /////////////
 			///////////////////////////////////
 
-				function get_user_nick($id) {
+				/*function get_user_nick($id) {
 					if (!no_permission(2)) {
 						GLOBAL $conn;
 						$qry="SELECT nick FROM users WHERE id=:id";
@@ -507,7 +645,7 @@
 
 						return $nick;
 					}
-				}
+				}*/
 				function short_by_users($id) {
 					if (!no_permission(2)) {
 						GLOBAL $conn;
@@ -538,11 +676,10 @@
 						$id=$_POST['id'];
 						$keys=array_keys($_POST);
 
-						print_r($keys);
 						$pos=count(array_keys($_POST));
 						$keys=array_keys($_POST);
 
-						while ($i<$pos) {
+						while ($i<=$pos) {
 							if ($i%2==1) {
 								$truedata['user'][$i]=$_POST[$keys[$i]];
 							} else {
@@ -553,7 +690,7 @@
 
 						$i=0;
 						while ($i<$pos) {
-							$qry="UPDATE participants SET position=:pos WHERE game=:id AND team=:user ";
+							$qry="UPDATE participants SET position=:pos WHERE game=:id AND user=:user ";
 							$result=$conn->prepare($qry);
 							$result->bindParam(':pos', $truedata['pos'][$i]);
 							$result->bindParam(':user', $truedata['user'][$i-1]);
@@ -561,7 +698,9 @@
 							$result->execute();
 							$i++;
 						}
+						header("Refresh:0; url=http://localhost/intranet/admin.php?f=ver_juego");
 					}
+				}
 			
 			///////////////////////////////////
 			///////////// BY TEAM /////////////         
@@ -582,30 +721,40 @@
 				function short_by_teams($id) {
 					if (!no_permission(2)) {
 						GLOBAL $conn;
-						$qry="SELECT DISTINCT team FROM participants WHERE game=:id";
+						$qry="SELECT count(DISTINCT team) FROM participants WHERE game=:id";
 						$result=$conn->prepare($qry);
 						$result->bindParam(":id", $id);
 						$result->execute();
+						$ngroups=$result->fetchColumn();
 
+						GLOBAL $conn;
+							$qry="SELECT DISTINCT team FROM participants WHERE game=:id";
+							$resultteam=$conn->prepare($qry);
+							$resultteam->bindParam(":id", $id);
+							$resultteam->execute();
+							$trex=$resultteam->fetchAll(PDO::FETCH_COLUMN);
 						echo "<form method='post' action='admin.php?f=edit_positions_teams'>";
 
 						$i=0;
-						while  (($res=$result->fetchColumn($i))!=false) {
-							$qry="SELECT * FROM participants WHERE team=:team";
+						while  ($i<$ngroups) {
+
+							$res=$trex[$i];
+							$qry="SELECT * FROM participants WHERE team=:team AND game=:id";
 							$final=$conn->prepare($qry);
+							$final->bindParam(":id", $id);
 							$final->bindParam(":team", $res);
 							$final->execute();
-							$res=$final->fetchAll();
+							$resa=$final->fetchAll();
 
 							echo "
 								<ul>
-									<li> ".get_team_name($res[$i][2])."
+									<li> ".get_team_name($resa[0]['team'])."<input type='text' name='id' hidden='hidden' readonly='readonly' value='".$id."'><input type='text' name='a".$res."' hidden='hidden' readonly='readonly' value='".$res."'>     Posicion: <input type='text' name='b".$res."'>
 										<ul>
 							";
-							foreach ($res as $resu) {
+							foreach ($resa as $resu) {
 								echo "
 									<li>
-										".get_user_nick($resu[1])."  <input type='text' name='id' hidden='hidden' readonly='readonly' value='".$id."'><input type='text' name='a".$resu[1]."' hidden='hidden' readonly='readonly' value='".$resu[1]."'>     Posicion: <input type='text' name='b".$resu[1]."'>
+										".get_user_nick($resu[1])."
 									</li>
 							";
 							}
@@ -614,7 +763,7 @@
 									</li>
 								</ul>
 							";
-							$i++;
+							$i=$i+1;
 						}
 						echo "<br><button type='submit' formmethod='post' class='btn btn-primary'>Guardar</button></form>";
 					}
@@ -650,6 +799,7 @@
 							$result->execute();
 							$i++;
 						}
+						header("Refresh:0; url=http://localhost/intranet/admin.php?f=ver_juego");
 					}
 				}
 	?>

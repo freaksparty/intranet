@@ -10,7 +10,7 @@
 		error_reporting(E_ALL);
 
 		session_start();
-		$userid=$_SESSION['user_id'];
+		$userid=$_COOKIE['user_id'];
 
 	//////////////////////////
 	/////// PERMISSION ///////
@@ -23,7 +23,7 @@
 			$result->bindParam(':id',$userid);
 			$result->execute();
 			$rol=$result->fetchColumn();
-			if (!isset($_SESSION['user_id'])) {
+			if (!isset($_COOKIE['user_id'])) {
 				$rol=3;
 			}
 			return $rol;
@@ -32,7 +32,7 @@
 			if (get_rol_level()>$rol) {
 				echo "Parece que te equivocaste, pero no tienes permiso para estar aquí.";
 				echo "<script>alert('CORRE INSENSATO!')</script>";
-				header("Refresh:0; url=http://localhost/intranet");
+				header("Refresh:0; url=http://localhost/intranet/");
 				return 0;
 			}
 		}

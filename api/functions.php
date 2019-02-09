@@ -27,6 +27,18 @@
 		}
 		return;
 	}*/
+	function get_user_nick($id) {
+					//if (!no_permission(2)) {
+						GLOBAL $conn;
+						$qry="SELECT nick FROM users WHERE id=:id";
+						$result=$conn->prepare($qry);
+						$result->bindParam(":id", $id);
+						$result->execute();
+						$nick=$result->fetchColumn();
+
+						return $nick;
+					}
+				//}
 	function points_total() {
 		$pg=points_games();
 		$pu=points_users();
@@ -103,4 +115,91 @@
 		}
 		return $pu;
 	}
+	function get_game_name2($id) {
+				GLOBAL $conn;
+				$qry="SELECT name FROM games WHERE id=:id";
+				$result=$conn->prepare($qry);
+				$result->bindParam(":id", $id);
+				$result->execute();
+				$name=$result->fetchColumn();
+				return $name;
+		}
+
+		function points_source2($USERID) {
+				if (isset($_POST['user'])) {
+					$users=$_POST['user'];
+				} else {
+					$users[0]=$USERID;
+				}
+
+
+				foreach ($users as $user)
+					GLOBAL $conn;
+					$qry="SELECT pg.points, p.game, p.position FROM participants as p, points_games as pg WHERE ((p.position=pg.position AND pg.points>0) AND p.user=:id) AND p.game=pg.id ";
+					$result=$conn->prepare($qry);
+					$result->bindParam(':id', $user);
+					$result->execute();
+
+					echo "
+						<table class='table table-striped'>
+							<thead>
+								<tr>
+									<th>
+										Usuario
+									</th>
+									<th>
+										Juego o Motivo
+									</th>
+									<th>
+										Posición
+									</th>
+									<th>
+										Cantidad
+									</th>
+								</tr>
+							</thead>
+						";
+					while ($res=$result->fetch()) {
+						echo "
+							<tbody>
+							<tr>
+								<th scope='row'>
+									".get_user_nick($user)."
+								</th>
+								<td>
+									<b>".get_game_name2($res['game'])."</b>
+								</td>
+								<td>
+									<b>".$res['position']."</b>
+								</td>
+								<td>
+									".$res["points"]."
+								</td>
+							</tr>
+						";
+					}
+					GLOBAL $conn;
+					$qry="SELECT * FROM points_users WHERE user=:id";
+					$result=$conn->prepare($qry);
+					$result->bindParam(':id', $user);
+					$result->execute();
+					
+					while ($res=$result->fetch()) {
+						echo "<tr>
+							<th scope='row'>
+								".get_user_nick($user)."
+							</th>
+							<td>
+								".$res['description']."
+							</td>
+							<td>
+								 
+							</td>
+							<td>
+								".$res["points"]."
+							</td>
+						</tr>
+						</tbody></table>";
+					}
+		}
 ?>

@@ -30,53 +30,33 @@
 	$users=$result->fetchAll();
 
 	$pointsTeam=array();*/
-	$qry="SELECT id, nick, team,(SELECT name FROM teams_users as tu WHERE users.team=tu.id) as teamname FROM users";
+	$qry="SELECT id, nick, team FROM users";
 	$result=$conn->prepare($qry);
 	$result->execute();
-	$users=$result->fetchAll();
-	$pointsTeam=array();
+	$users=$result->fetch();
 
-	//print_r($users);
-
-	foreach ($users as $user => $value) {
-		$qry="SELECT sum(tt.points) as total
-		FROM ( SELECT points 
-		FROM points_games as pg, participants as p, games as g 
-		WHERE pg.id=g.id AND p.game=pg.id AND g.type=1 AND p.user=:user AND p.position=pg.position) as tt";
+	foreach ($users as $user) {
+		$qry="SELECT sum(points) FROM points_games as pg, participants as p, games as g WHERE pg.id=g.id AND p.game=pg.id AND p.user=:user AND g.type=1";
 		$result=$conn->prepare($qry);
-		$result->bindParam(":user", $users[$user]['id']);
+		$result->bindParam(":user", $user['id']);
 		$result->execute();
-		$users[$user]['points_games']=$result->fetchColumn(0);
-		//print_r($users[$user]['points_games']);
-		$qry="SELECT sum(tt.points) 
-   		FROM ( SELECT points 
-        	FROM points_games as pg, participants as p, games as g 
-        	WHERE pg.id=g.id AND p.game=pg.id AND g.type=2 AND p.user=:user AND p.position=pg.position) as tt";
+		$user['points_games']=$result->fetchColumn();
+		$qry="SELECT sum(points) FROM points_games as pg, participants as p, games as g WHERE pg.id=g.id AND p.game=pg.id AND p.user=:user AND g.type=2";
 		$result=$conn->prepare($qry);
-		$result->bindParam(":user", $users[$user]['id']);
+		$result->bindParam(":user", $user['id']);
 		$result->execute();
-		$users[$user]['points_prod']=$result->fetchColumn(0);
-		$qry="SELECT sum(tt.points) 
-   		FROM ( SELECT points 
-        	FROM points_games as pg, participants as p, games as g 
-        	WHERE pg.id=g.id AND p.game=pg.id AND g.type=3 AND p.user=:user AND p.position=pg.position) as tt";
+		$user['points_prod']=$result->fetchColumn();
+		$qry="SELECT sum(points) FROM points_games as pg, participants as p, games as g WHERE pg.id=g.id AND p.game=pg.id AND p.user=:user AND g.type=3";
 		$result=$conn->prepare($qry);
-		$result->bindParam(":user", $users[$user]['id']);
+		$result->bindParam(":user", $user['id']);
 		$result->execute();
-		$users[$user]['points_mini']=$result->fetchColumn(0);
+		$user['points_mini']=$result->fetchColumn();
 		$qry="SELECT sum(points) FROM points_users as pu WHERE user=:user";
 		$result=$conn->prepare($qry);
-		$result->bindParam(":user", $users[$user]['id']);
+		$result->bindParam(":user", $user['id']);
 		$result->execute();
-		$users[$user]['points_other']=$result->fetchColumn(0);
-		//print_r($users[$user]);
-		$users[$user]['total']=$users[$user]['points_mini']+$users[$user]['points_prod']+$users[$user]['points_games']+$users[$user]['points_other'];
+		$user['points_ther']=$result->fetchColumn();
 	}
-	//print_r($users);
-	foreach ($users as $key => $row) {
-  		$aux[$key] = $row['total'];
-	}
-	array_multisort($aux, SORT_DESC, $users);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -93,7 +73,6 @@
 				<div class="col-sm-10 col-xs-12">
 					<div class="apuntar">
 						<button user="3" game="2" class="pull-right btn btn-fol" id="change_view">CAMBIAR VISTA</button>
-						<a href="source.php"><button user="3" game="2" class="pull-right btn btn-fol" id="change_view">FUENTE DE PUNTOS</button></a>
 					</div>
 					<h2 class='title'>CLASIFICACIÓN</h2>
 					<table id="table-users" class="table table-hover table-striped table-responsive">

@@ -56,6 +56,30 @@ form .invalid-feedback{
     background-color: rgba(0,0,0, 0.3);
 }
 
+.reto{
+    min-height: 250px;
+    transition: all .2s ease-in-out;
+}
+
+.reto:hover{
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.row img{
+    width: 100%;
+}
+
+.header-reto span h2{
+    position: relative;
+    bottom: 55px;
+    width:100%;
+    padding: 10px 0px;
+    margin: 0;
+    color: #FFF;
+    background-color: rgba(0,0,0, 0.3);
+}
+
 .descr{
     width: 100%;
 }
