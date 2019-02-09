@@ -9,22 +9,22 @@
 		ini_set('display_startup_errors', 1);
 		error_reporting(E_ALL);
 
-		session_start();
-		$userid=$_COOKIE['user_id'];
+		//session_start();
 
 	//////////////////////////
 	/////// PERMISSION ///////
 	//////////////////////////
 		
 		function get_rol_level() {
-			GLOBAL $conn, $userid;
-			$qry="SELECT role FROM users WHERE id = :id";
-			$result=$conn->prepare($qry);
-			$result->bindParam(':id',$userid);
-			$result->execute();
-			$rol=$result->fetchColumn();
 			if (!isset($_COOKIE['user_id'])) {
 				$rol=3;
+			} else {
+				GLOBAL $conn;
+				$qry="SELECT role FROM users WHERE id = :id";
+				$result=$conn->prepare($qry);
+				$result->bindParam(':id', $_COOKIE['user_id']);
+				$result->execute();
+				$rol=$result->fetchColumn();
 			}
 			return $rol;
 		}

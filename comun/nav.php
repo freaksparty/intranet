@@ -13,6 +13,17 @@
         <a class="nav-link" href="./horario.php">Horario</a>
       </li>
       <li class="nav-item">
+        <a class="nav-link" href="./retos.php">Retos</a>
+      </li>
+      <?php
+        require_once("./admin/config.php");
+        if(get_rol_level()<=2) {
+          echo '<li class="nav-item">
+            <a class="nav-link" href="./admin.php"><strong>Admin CP</strong></a>
+          </li>';
+        }
+      ?>
+      <li class="nav-item">
         <a class="nav-link" target="_blank" href="http://foro.ficonlan.es">Foro</a>
       </li>
     </ul>

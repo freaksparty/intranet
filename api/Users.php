@@ -49,9 +49,9 @@
 			</head>
 			<body>
 				<p>Hola '.$nick.',</p>
-				<p>Si has llegado hasta aquí es que estoy haciendo las cosas bien (OLEEÉ). Pulsa en este enlace para establecer tu contraseña y así disfrutar de este evento.</p>
-				<p><a href="http://localhost/intranet/pass.php?wawawa='.$crypted.'" target="_blank">NO PULSAR</a></p>
-				<p>Muchas gracias '.$nick.'!!</p>
+				<p>Si has llegado hasta aquí, ya no hay vuelta atrás, así que solo te queda intentar disfrutar de nuestros eventos durante los próximos días, ¡pero para ello has de acceder al siguiente enlace!</p>
+				<p><a href="http://localhost/intranet/pass.php?wawawa='.$crypted.'" target="_blank"><del>Vendernos Tu Alma</del> Disfruta con nosotros!</a></p>
+				<p>¡¡Muchas gracias '.$nick.'!!</p>
 			</body>
 			</html>
 			';
