@@ -217,6 +217,30 @@
 				echo -1;
 			}
 		}
+
+		function winner_reto($status, $user, $idr) {
+			GLOBAL $conn;
+			$qry="UPDATE participants_retos SET gana=:gana WHERE user=:user AND reto=:id;";
+			$result=$conn->prepare($qry);
+			$result->bindParam(':gana', $status);
+			$result->bindParam(':user', $user);
+			$result->bindParam(':id', $idr);
+			$res=$result->execute();
+
+			return $res;
+		}
+
+		function done_reto($status, $user, $idr) {
+			GLOBAL $conn;
+			$qry="UPDATE participants_retos SET done=:gana WHERE user=:user AND reto=:id;";
+			$result=$conn->prepare($qry);
+			$result->bindParam(':gana', $status);
+			$result->bindParam(':user', $user);
+			$result->bindParam(':id', $idr);
+			$res=$result->execute();
+
+			return $res;
+		}
 	}
 
 	$user=new Users();
@@ -229,6 +253,11 @@
 		case "login": $user->login($_POST['nick'], $_POST['pass']);break;
 		case "register_game": $user->register_game($_POST['id_user'], $_POST['id_game']);break;
 		case "register_reto": $user->register_reto($_POST['id_user'], $_POST['id_game']);break;
+		case "add_winner_reto": $user->winner_reto(1, $_POST['id_user'], $_POST['id_game']);break;
+		case "rem_winner_reto": $user->winner_reto(0, $_POST['id_user'], $_POST['id_game']);break;
+		case "add_done_reto": $user->done_reto(1, $_POST['id_user'], $_POST['id_game']);break;
+		case "rem_done_reto": $user->done_reto(0, $_POST['id_user'], $_POST['id_game']);break;
+		//case "rem_done_reto": $user->done_reto(0, 165, 1);break;
 		case "register_game_team": 
 			$users=array();
 			$users[]=$_POST["user_id"];

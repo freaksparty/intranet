@@ -14,6 +14,76 @@ $(function(){
 		
 		window.location.href=raiz+"ver_reto.php?id="+reto;
 	});
+	
+
+	$(".sum_intento").click(function(e){
+		e.preventDefault();
+
+		var user=$(this).attr('user');
+
+		$.ajax({
+			type: "POST",
+			url: raiz+"api/Users.php?f=add_done_reto",
+			data: "id_user="+$(this).attr('user')+"&id_game="+$(this).attr('game'),
+			success: function(data){
+				$('#'+user+'.sum_intento').prop('hidden', true);
+				$('#'+user+'.res_intento').prop('hidden', false);
+				$("tr."+user).removeClass("table-success").addClass("table-danger");
+			}
+		});
+	});
+
+	$(".res_intento").click(function(e){
+		e.preventDefault();
+
+		var user=$(this).attr('user');
+
+		$.ajax({
+			type: "POST",
+			url: raiz+"api/Users.php?f=rem_done_reto",
+			data: "id_user="+$(this).attr('user')+"&id_game="+$(this).attr('game'),
+			success: function(data){
+				$('#'+user+'.res_intento').prop('hidden', true);
+				$('#'+user+'.sum_intento').prop('hidden', false);
+				$("tr."+user).removeClass("table-success").removeClass("table-danger").addClass("table-warning");
+			}
+		});
+	});
+
+	$(".ganador").click(function(e){
+		e.preventDefault();
+
+		var user=$(this).attr('user');
+
+		$.ajax({
+			type: "POST",
+			url: raiz+"api/Users.php?f=add_winner_reto",
+			data: "id_user="+$(this).attr('user')+"&id_game="+$(this).attr('game'),
+			success: function(data){
+				$('#'+user+'.ganador').prop('hidden', true);
+				$('#'+user+'.des_ganador').prop('hidden', false);
+				$("tr."+user).addClass("table-success").removeClass("table-warning").removeClass("table-danger");
+			}
+		});
+	});
+
+	$(".des_ganador").click(function(e){
+		e.preventDefault();
+
+		var user=$(this).attr('user');
+
+		$.ajax({
+			type: "POST",
+			url: raiz+"api/Users.php?f=rem_winner_reto",
+			data: "id_user="+$(this).attr('user')+"&id_game="+$(this).attr('game'),
+			success: function(data){
+				$('#'+user+'.des_ganador').prop('hidden', true);
+				$('#'+user+'.ganador').prop('hidden', false);
+				$("tr."+user).removeClass("table-success").addClass("table-danger");
+			}
+		});
+	});
+
 	$("form#login button#next_login").click(function(e){
 		e.preventDefault();
 

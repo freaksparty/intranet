@@ -44,7 +44,6 @@
 									<th>Registro</th>
 									<th>Repetir</th>
 									<th>Máximo participantes</th>
-									<th>Máximo ganadores</th>
 									<th>FicoPuntos</th>
 									<th>Fecha</th>
 									<th>Fin registro</th>
@@ -67,13 +66,13 @@
 						<td>".utf8_encode($retos['info'])."</td>
 						<td>".$retos['img']."</td>
 						<td>".boolToText($retos['reg_enable'])."</td>
-						<td>".boolToText($retos['repetir'])."</td>
+						<td>".$retos['repetir']."</td>
 						<td>".$retos['max_participants']."</td>
-						<td>".$retos['max_winners']."</td>
 						<td>".$retos['puntos']."</td>
 						<td>".$retos['start_date']."</td>
 						<td>".$retos['deadline']."</td>
 						<td><input type='radio' name='reto' ".$disabled." value='".$retos['idx']."'</td>
+						</tr>
 					";
 					echo "</tbody></table>
 						<br>
@@ -92,6 +91,9 @@
 				}  elseif ($_POST['listreto']==='edit') {
 						setcookie("reto", $_POST['reto']);
 						editreto();
+				}  elseif ($_POST['listreto']==='part') {
+						setcookie("reto", $_POST['reto']);
+						listRetosUsers();
 				}
 			}
 
@@ -200,12 +202,6 @@
 						</div>
 					</div>
 					<div class='form-group row'>
-						<label for='example-text-input' class='col-2 col-form-label'>Ganadores máximos</label>
-						<div class='col-10'>
-							<input class='form-control' type='text' name='a7' value='".$id['max_winners']."' ".$disabled.">
-						</div>
-					</div>
-					<div class='form-group row'>
 						<label for='example-text-input' class='col-2 col-form-label'>Fecha</label>
 						<div class='col-10'>
 							<input class='form-control' type='text' name='a8' placeholder='DD-MM-AAAA HH:MM:SS' value='".$id['start_date']."' ".$disabled.">
@@ -226,9 +222,9 @@
 
 			function savereto() {
 				if (!no_permission(2)) {
-					if(isset($_GET['f']) AND $_GET['f']=='savegame') {
+					if(isset($_GET['f']) AND $_GET['f']=='savereto') {
 						GLOBAL $conn;
-						$qry="UPDATE retos SET `name`=:a1 , `info`=:a2, `img`=:a3, `type`=:a4, `class`=:a5, `max_participants`=:a6, `max_winners`=:a7, `start_date`=:a8, `deadline`=:a9, `reg_enable`=:a10, `repetir`=:a11, `puntos`=:a12 WHERE `idx`=:id";
+						$qry="UPDATE retos SET `name`=:a1 , `info`=:a2, `img`=:a3, `max_participants`=:a6, `start_date`=:a8, `deadline`=:a9, `reg_enable`=:a10, `repetir`=:a11, `puntos`=:a12 WHERE `idx`=:id";
 						$result=$conn->prepare($qry);
 						$a1=utf8_decode($_POST['a1']);
 						$a2=utf8_decode($_POST['a2']);
@@ -236,10 +232,7 @@
 						$result->bindParam(':a1', $a1);
 						$result->bindParam(':a2', $a2);
 						$result->bindParam(':a3', $_POST['a3']);
-						$result->bindParam(':a4', $_POST['a4']);
-						$result->bindParam(':a5', $_POST['a5']);
 						$result->bindParam(':a6', $_POST['a6']);
-						$result->bindParam(':a7', $_POST['a7']);
 						$result->bindParam(':a8', $_POST['a8']);
 						$result->bindParam(':a9', $_POST['a9']);
 						$result->bindParam(':a10', $_POST['a10']);
@@ -250,6 +243,73 @@
 					setcookie("reto", null, -1);
 					header("Refresh:0; url=http://localhost/intranet/admin.php?f=ver_retos");
 				}
+			}
+		//////////////////////////////////
+		////////// USER RETOS ////////////
+		//////////////////////////////////
+			function listRetosUsers() {
+				GLOBAL $conn;
+				$qry="SELECT * FROM retos WHERE idx=:idx;";
+				$result=$conn->prepare($qry);
+				$result->bindParam(":idx", $_POST['reto']);
+				$result->execute();
+
+				$reto=$result->fetch();
+
+				$qry="SELECT * FROM participants_retos p WHERE reto=:idx ORDER BY p.prioridad ASC, p.reg_date ASC;";
+				$result=$conn->prepare($qry);
+				$result->bindParam(":idx", $_POST['reto']);
+				$result->execute();
+				echo "<table class='table table-striped'>
+						<thead>
+							<tr>
+								<th>Participante</th>
+								<th>Estado actual</th>
+								<th>Cambiar intento actual a:</th>
+								<th>Cambiar estado actual a:</th>
+							</tr>
+						</thead>
+						<tbody>";
+
+				while($res=$result->fetch()) {
+					$ganador = $res['gana']==1 ? "" : "hidden";
+					$perdedor = $res['gana']==0 ? "" : "hidden";
+					$done = $res['done']==0 ? "" : "hidden";
+					$ndone = $res['done']==1 ? "" : "hidden";
+					if ($res['gana']==1) {
+						$status="class='table-success ".$res['user']."'";
+					} else if($res['done']==0) {
+						$status="class='table-warning ".$res['user']."'";
+					} else {
+						$status="class='table-danger ".$res['user']."'";
+					}
+
+					if ($res['gana']==1) {
+						$estado="Ya ganó, registro deshabilitado para este usuario.";
+					} elseif ($reto['repetir']>$res['prioridad'] && $res['done']==1) {
+							$estado="Este usuario perdió, y este reto ya no se puede repetir.";
+					} elseif ($res['done']==1) {
+						$estado="Este usuario perdió, pero este reto permite repeticiones.";
+					} else {
+						$estado="Este usuario está en cola para el reto.";
+					}
+					echo "<tr ".$status.">
+						<th scope='row'>".get_user_nick($res['user'])."</th>
+						<td>
+							".$estado."
+						</td>
+						<td>
+							<button class='btn btn-primary sum_intento' id='".$res['user']."' ".$done." user=".$res['user']." game=".$_POST['reto'].">Completado</button>
+							<button class='btn btn-primary res_intento' id='".$res['user']."' ".$ndone." user=".$res['user']." game=".$_POST['reto'].">No completado</button>
+						</td>
+						<td>
+							<button class='btn btn-primary ganador' id='".$res['user']."' ".$perdedor." user=".$res['user']." game=".$_POST['reto'].">Ganador</button>
+							<button class='btn btn-primary des_ganador' id='".$res['user']."' ".$ganador." user=".$res['user']." game=".$_POST['reto'].">Perdedor</button>
+						</td>
+						</tr>";
+
+				}
+				unset($_POST);
 			}
  ?>
 

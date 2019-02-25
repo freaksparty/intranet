@@ -132,7 +132,7 @@ $parts=$resultUsers->fetchAll();
                                 <input type="text" class="form-control" name="name_team" id="name_team" placeholder="Introduce el nombre del equipo" required>
                             </div>
                             <?php
-                                for($i=0; $i<$pByTeams; $i++){
+                                for($i=0; $i<$pByTeams-1; $i++){
                             ?>
                             <div class="form-group part_team">
                                 <label for="part_team">Compañero</label>

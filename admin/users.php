@@ -6,8 +6,8 @@
 
 		include './api/config.php';
 		include './api/functions.php';
-		require_once "admin/games.php";
-		require_once "admin/config.php";
+		require_once "games.php";
+		require_once "config.php";
 
 	/////////////////////////////
 	/////// LIST & MANAGE ///////

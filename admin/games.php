@@ -5,8 +5,8 @@
 	//////////////////////////////////
 
 		include './api/config.php';
-		require_once "admin/users.php";
-		require_once "admin/config.php";
+		require_once "users.php";
+		require_once "config.php";
 
 	///////////////////////////////////////////////
 	/////////////// TYPE/CLASS MENU ///////////////
@@ -108,8 +108,8 @@
 								<th>Imagen</th>
 								<th>Tipo</th>
 								<th>Clase</th>
-								<th>Equipo máximo</th>
-								<th>Equipo mínimo</th>
+								<th>Participación Máxima</th>
+								<th>Tamaño del equipo</th>
 								<th>Fecha</th>
 								<th>Fin registro</th>
 								<th>Seleccionar</th>
@@ -300,13 +300,13 @@
 						</div>
 					</div>
 					<div class='form-group row'>
-						<label for='example-text-input' class='col-2 col-form-label'>Equipo Máximo</label>
+						<label for='example-text-input' class='col-2 col-form-label'>Participación Máxima</label>
 						<div class='col-10'>
 							<input class='form-control' type='text' name='a6' value='".$id[6]."'>
 						</div>
 					</div>
 					<div class='form-group row'>
-						<label for='example-text-input' class='col-2 col-form-label'>Equipo Mínimo</label>
+						<label for='example-text-input' class='col-2 col-form-label'>Tamaño del equipo</label>
 						<div class='col-10'>
 							<input class='form-control' type='text' name='a7' value='".$id[7]."'>
 						</div>
