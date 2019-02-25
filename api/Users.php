@@ -147,7 +147,16 @@
 			if($inscribed<$max){
 				$now=strtotime(date("Y-m-d H:i:s"));
 				if($date_end>$now){
-					$qry="INSERT INTO participants_retos(reto, user) VALUES (:game, :user)";
+					$qry="SELECT count(*) FROM participants_retos WHERE user=:user AND reto=:game;";
+					$result=$conn->prepare($qry);
+					$result->bindParam(':game', $game);
+					$result->bindParam(':user', $user);
+					$result->execute();
+
+					if($result->fetchColumn()==0)
+						$qry="INSERT INTO participants_retos(reto, user) VALUES (:game, :user)";
+					else
+						$qry="UPDATE participants_retos SET done=0, prioridad=prioridad+1, reg_date=CURRENT_TIMESTAMP() WHERE reto=:game AND user=:user;";
 					$result=$conn->prepare($qry);
 					$result->bindParam(':game', $game);
 					$result->bindParam(':user', $user);

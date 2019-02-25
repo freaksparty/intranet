@@ -30,9 +30,10 @@
 		}
 		function no_permission($rol) {
 			if (get_rol_level()>$rol) {
-				echo "Parece que te equivocaste, pero no tienes permiso para estar aquí.";
-				echo "<script>alert('CORRE INSENSATO!')</script>";
+				echo "No tienes permisos para estar aquí.";
+				echo "<script>alert('No tienes permisos para estar aquí.')</script>";
 				header("Refresh:0; url=http://localhost/intranet/");
+				die;
 				return 0;
 			}
 		}

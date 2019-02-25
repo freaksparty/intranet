@@ -66,7 +66,7 @@
                         <?php
                             $qry="SELECT *
                                     FROM retos
-                                    WHERE DAY(deadline)=DAY(NOW())
+                                    WHERE DAY(deadline)=DAY(NOW()) AND reg_enable=1
                                     ORDER BY deadline ASC";
                             $result=$conn->prepare($qry);
                             $result->execute();
@@ -94,6 +94,7 @@
                         <?php
                             $qry="SELECT *
                                     FROM retos
+                                    WHERE reg_enable=1
                                     ORDER BY deadline ASC";
                             $result=$conn->prepare($qry);
                             $result->execute();

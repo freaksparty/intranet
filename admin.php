@@ -6,6 +6,7 @@
 		require_once "admin/games.php";
 		require_once "admin/users.php";
 		require_once "admin/config.php";
+		require_once "admin/retos.php";
 		
 ?>
 <!DOCTYPE html>
@@ -23,8 +24,11 @@
 				<div class="col-sm-8 col-xs-12">
 					<div class="Adminevento">
 						<button type="submit" onclick="location.href = 'http://localhost/intranet/admin.php?f=ver_juego';" class="btn btn-primary">Ver Juegos</button>
+						<button type="submit" onclick="location.href = 'http://localhost/intranet/admin.php?f=ver_retos';" class="btn btn-primary">Ver Retos</button>
 						<button type="submit" onclick="location.href = 'http://localhost/intranet/admin.php?f=creategame';" class="btn btn-primary">Añadir Juego</button>
 						<button type="submit" onclick="location.href = 'http://localhost/intranet/admin.php?f=listusers';" class="btn btn-primary">Ver Usuarios</button>
+						<button type="submit" onclick="location.href = 'http://localhost/intranet/admin.php?f=upload_image';" class="btn btn-primary">Subir Imagen</button>
+						<br><br><br>
 					</div>
 				</div>
 			</div>
@@ -70,6 +74,24 @@
 				break;
 				case 'edit_positions_teams':
 					edit_positions_teams();
+				break;
+				case 'upload_image':
+					upload_image();
+				break;
+				case 'upload_image_game':
+					upload_image_game();
+				break;
+				case 'ver_retos':
+					listretos();
+				break;
+				case 'delreto':
+					delreto();
+				break;
+				case 'savereto':
+					savereto();
+				break;
+				case 'retomngm':
+					retomngm();
 				break;
 				default:
 					
